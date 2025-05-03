@@ -21,7 +21,7 @@ class EmployeeController extends Controller
         $department = Department::all();
         $position = Position::all();
         $employment = Employment::all();
-        return view('manageEmployee')->with('employee', $employee)->with('department', $department)->with('position', $position)->with('employment', $employment);
+        return view('manage.manageEmployee')->with('employee', $employee)->with('department', $department)->with('position', $position)->with('employment', $employment);
     }
 
     /**
@@ -33,7 +33,7 @@ class EmployeeController extends Controller
         $department = Department::all();
         $position = Position::all();
         $employment = Employment::all();
-        return view('addEmployee')->with('departments', $department)->with('positions', $position)->with('employments', $employment);
+        return view('manage.addEmployee')->with('departments', $department)->with('positions', $position)->with('employments', $employment);
     }
 
     /**
@@ -97,7 +97,7 @@ class EmployeeController extends Controller
         $department = Department::all();
         $position = Position::all();
         $employment = Employment::all();
-        return view('viewEmployee')->with('employee', $employee)->with('department', $department)->with('position', $position)->with('employment', $employment);
+        return view('manage.viewEmployee')->with('employee', $employee)->with('department', $department)->with('position', $position)->with('employment', $employment);
     }
 
     /**
@@ -110,7 +110,7 @@ class EmployeeController extends Controller
         $department = Department::all();
         $position = Position::all();
         $employment = Employment::all();
-        return view('editEmployee')->with('employee', $employee)->with('departments', $department)->with('positions', $position)->with('employments', $employment);
+        return view('manage.editEmployee')->with('employee', $employee)->with('departments', $department)->with('positions', $position)->with('employments', $employment);
     }
 
     /**

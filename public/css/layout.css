@@ -97,9 +97,9 @@ header {
   color: var(--primary);
 }
 
-.logo i {
-  margin-right: 0.5rem;
-  font-size: 1.5rem;
+.logo-img {
+  width: 100px;  /* adjust size as needed */
+  height: auto;
 }
 
 /* ========== ENHANCED NAVIGATION STYLES ========== */

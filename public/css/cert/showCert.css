@@ -1,0 +1,481 @@
+/* Main Certificate Container */
+.certificate-container {
+    width: 100%;
+    max-width: 850px;
+    margin: 0 auto;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    position: relative;
+}
+
+/* Certificate Header */
+.certificate-header {
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #000;
+    padding-bottom: 10px;
+}
+
+.certificate-header p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.certificate-header h1 {
+    margin: 10px 0 0;
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Registry Information */
+.registry-info {
+    display: flex;
+    border: 1px solid #000;
+    margin-bottom: 10px;
+}
+
+.registry-left {
+    flex: 3;
+    border-right: 1px solid #000;
+}
+
+.registry-right {
+    flex: 1;
+}
+
+.registry-field {
+    padding: 5px;
+    position: relative;
+}
+
+.registry-field label {
+    display: block;
+    font-size: 12px;
+    font-weight: normal;
+    margin-bottom: 2px;
+}
+
+.registry-field p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: bold;
+    min-height: 20px;
+}
+
+/* Sections */
+.section {
+    display: flex;
+    border: 1px solid #000;
+    margin-bottom: 10px;
+}
+
+.section-label {
+    width: 30px;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    border-right: 1px solid #000;
+}
+
+.section-label span {
+    display: block;
+    padding: 5px 0;
+    font-size: 16px;
+}
+
+.section-content {
+    flex: 1;
+    padding: 10px;
+}
+
+.two-column {
+    display: flex;
+}
+
+.column {
+    flex: 1;
+    padding: 0 5px;
+}
+
+.column:first-child {
+    border-right: 1px solid #000;
+}
+
+/* Field Rows and Fields */
+.field-row {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.field {
+    flex: 1;
+    padding: 0 5px;
+    position: relative;
+}
+
+.field.full-width {
+    flex: 100%;
+}
+
+.field label {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+.field p {
+    margin: 0;
+    font-size: 14px;
+    min-height: 20px;
+    border-bottom: 1px dotted #999;
+    padding: 2px 0;
+}
+
+.field span {
+    font-size: 10px;
+    color: #666;
+}
+
+/* Name Fields */
+.name-fields, .date-fields, .place-fields, .residence-fields {
+    display: flex;
+}
+
+.name-field, .date-field, .place-field, .residence-field {
+    flex: 1;
+    padding: 0 5px;
+}
+
+/* Attendant Options */
+.attendant-options {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.attendant-option {
+    margin-right: 15px;
+    font-size: 14px;
+    padding: 5px 0;
+}
+
+.attendant-option.selected {
+    font-weight: bold;
+}
+
+.attendant-option span {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 1px solid #000;
+    text-align: center;
+    margin-right: 5px;
+}
+
+/* Certification Text */
+.certification-text {
+    font-size: 14px;
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+.blank-line {
+    display: inline-block;
+    min-width: 100px;
+    border-bottom: 1px solid #000;
+    text-align: center;
+}
+
+/* Signature Blocks */
+.signature-block {
+    display: flex;
+    margin: 15px 0;
+}
+
+.signature-field {
+    flex: 1;
+    padding: 0 5px;
+}
+
+.signature-line {
+    min-height: 20px;
+    border-bottom: 1px solid #000;
+    margin: 0;
+    padding: 2px 0;
+}
+
+/* Remarks Section */
+.remarks-text {
+    min-height: 50px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 5px 0;
+}
+
+.contact-info {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.contact-info label {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.contact-info p {
+    margin: 0;
+    border-bottom: none;
+}
+
+/* Certificate Footer */
+.certificate-footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #000;
+}
+
+.certificate-footer p {
+    margin: 0;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Page Actions */
+.page-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.btn {
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn i {
+    margin-right: 8px;
+}
+
+.btn-outline {
+    border: 1px solid #3498db;
+    color: #3498db;
+    background-color: transparent;
+}
+
+.btn-outline:hover {
+    background-color: #3498db;
+    color: #fff;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+/* Print Styles */
+@media print {
+    .page-actions, 
+    .page-title,
+    header, 
+    footer, 
+    nav {
+        display: none !important;
+    }
+    
+    .certificate-container {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    body {
+        background-color: #fff;
+    }
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .section {
+        flex-direction: column;
+    }
+    
+    .section-label {
+        width: 100%;
+        flex-direction: row;
+        border-right: none;
+        border-bottom: 1px solid #000;
+    }
+    
+    .section-label span {
+        padding: 5px;
+    }
+    
+    .field-row {
+        flex-direction: column;
+    }
+    
+    .field {
+        margin-bottom: 10px;
+    }
+    
+    .two-column {
+        flex-direction: column;
+    }
+    
+    .column:first-child {
+        border-right: none;
+        border-bottom: 1px solid #000;
+        margin-bottom: 10px;
+    }
+    
+    .name-fields, 
+    .date-fields, 
+    .place-fields, 
+    .residence-fields {
+        flex-direction: column;
+    }
+    
+    .name-field, 
+    .date-field, 
+    .place-field, 
+    .residence-field {
+        margin-bottom: 10px;
+    }
+    
+    .page-actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        margin-bottom: 10px;
+        width: 100%;
+        justify-content: center;
+    }
+}
+/* Success Popup Notification */
+.success-popup {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 9999;
+    max-width: 400px;
+    width: calc(100% - 4rem);
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    padding: 0;
+    overflow: hidden;
+    transform: translateY(-20px);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                opacity 0.4s ease,
+                visibility 0.4s ease;
+}
+
+.success-popup.show {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+}
+
+.success-popup-content {
+    display: flex;
+    align-items: stretch;
+}
+
+.success-popup-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #10b981;
+    color: white;
+    padding: 1.25rem 1rem;
+    font-size: 1.5rem;
+}
+
+.success-popup-message {
+    flex: 1;
+    padding: 1rem 1.25rem;
+    color: #1f2937;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+.success-popup-close {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 0.5rem;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.5rem;
+    transition: color 0.2s;
+}
+
+.success-popup-close:hover {
+    color: #4b5563;
+}
+
+.success-popup-progress {
+    height: 4px;
+    background-color: #e5e7eb;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.success-popup-progress-bar {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #10b981;
+    transform-origin: left;
+}
+
+/* Animation for the progress bar */
+@keyframes progress {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+}
+
+/* Animation for the popup entrance */
+@keyframes popIn {
+    0% { transform: translateY(-20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Animation for the popup exit */
+@keyframes popOut {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-20px); opacity: 0; }
+}

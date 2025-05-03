@@ -27,7 +27,7 @@
     @section('header')
         <header>
             <div class="logo" aria-label="Website Logo">
-                <i class="fas fa-code" aria-hidden="true"></i>
+                <img src="{{ asset('images/pdh_logo-removebg-preview.png') }}" alt="PDH Logo" class="logo-img">
                 <span>PDH_ADMIN</span>
             </div>
             <nav aria-label="Main Navigation">

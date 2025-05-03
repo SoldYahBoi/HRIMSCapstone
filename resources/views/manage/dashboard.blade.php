@@ -27,7 +27,7 @@
         <div class="stats-card">
             <div class="stats-card-content">
                 <h3>Total Employees</h3>
-                <p class="stats-number">487</p>
+                <p class="stats-number">{{$totalEmployee}}</p>
                 <span class="stats-change positive">
                     <i class="fas fa-arrow-up"></i> 4.5%
                 </span>
