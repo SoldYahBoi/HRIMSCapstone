@@ -109,19 +109,19 @@
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($certificate->created_at)->format('M d, Y') }}</td>
                                 <td class="cert-actions-cell">
-                                    <a href="{{ route('certificates.show', $certificate->id) }}" class="btn-icon view-cert" title="View Certificate">
+                                    <a href="{{ route('certificates.show', $certificate->cert_id) }}" class="btn-icon view-cert" title="View Certificate">
                                         <i class="fas fa-eye" aria-hidden="true"></i>
                                     </a>
-                                    <a href="{{ route('certificates.edit', $certificate->id) }}" class="btn-icon edit-cert" title="Edit Certificate">
+                                    <a href="{{ route('certificates.edit', $certificate->cert_id) }}" class="btn-icon edit-cert" title="Edit Certificate">
                                         <i class="fas fa-edit" aria-hidden="true"></i>
                                     </a>
                                     <button class="btn-icon print-cert" data-id="{{ $certificate->id }}" title="Print Certificate">
                                         <i class="fas fa-print" aria-hidden="true"></i>
                                     </button>
-                                    <form action="certificates/{{$certificate->id}}/archive" method="POST" class="d-inline archive-form" id="archive-form-{{ $certificate->id }}">
+                                    <form action="certificates/{{$certificate->cert_id}}/archive" method="POST" class="d-inline archive-form" id="archive-form-{{ $certificate->id }}">
                                         @csrf
                                         @method('PATCH')
-                                        <button type="button" class="btn-icon archive" title="Archive Certificate" data-employee-id="{{ $certificate->id }}" data-employee-name="{{ $certificate->child->first_name }} {{ $certificate->child->last_name }}">
+                                        <button type="button" class="btn-icon archive" title="Archive Certificate" data-employee-id="{{ $certificate->cert_id }}" data-employee-name="{{ $certificate->child->first_name }} {{ $certificate->child->last_name }}">
                                             <i class="fas fa-archive"></i>
                                         </button>
                                     </form>
@@ -141,11 +141,11 @@
                 </div>
             </div>
 
-            <!-- Death Certificates Section
+            <!-- Uncomment and update the Death Certificates Section -->
             <div id="deathSection" class="cert-section">
                 <div class="section-header">
                     <h3><i class="fas fa-cross" aria-hidden="true"></i> Death Certificates</h3>
-                    <span class="cert-count">2 records</span>
+                    <span class="cert-count">{{ $deathCount ?? 0 }} records</span>
                 </div>
                 
                 <div class="table-responsive">
@@ -165,25 +165,25 @@
                             @forelse($deathCertificates ?? [] as $certificate)
                             <tr>
                                 <td>{{ $certificate->registry_no }}</td>
-                                <td>{{ $certificate->deceased_first_name }} {{ $certificate->deceased_middle_name }} {{ $certificate->deceased_last_name }}</td>
-                                <td>{{ $certificate->date_of_death->format('M d, Y') }}</td>
-                                <td>{{ $certificate->cause_of_death }}</td>
-                                <td>{{ $certificate->place_of_death }}, {{ $certificate->cityMunicipality->name }}</td>
-                                <td>{{ $certificate->created_at->format('M d, Y') }}</td>
+                                <td>{{ $certificate->deceased->first_name }} {{ $certificate->deceased->middle_name }} {{ $certificate->deceased->last_name }}</td>
+                                <td>{{ \Carbon\Carbon::parse($certificate->deceased->date_of_death)->format('M d, Y') }}</td>
+                                <td>{{ $certificate->deathCause->immediate_cause ?? 'Not specified' }}</td>
+                                <td>{{ $certificate->deceased->place_of_death }}, {{ $certificate->cityMunicipality->name ?? '' }}</td>
+                                <td>{{ \Carbon\Carbon::parse($certificate->created_at)->format('M d, Y') }}</td>
                                 <td class="cert-actions-cell">
-                                    <a href="{{ route('certificates.show', $certificate->id) }}" class="btn-icon view-cert" title="View Certificate">
+                                    <a href="{{ route('certificates.show', $certificate->cert_id) }}" class="btn-icon view-cert" title="View Certificate">
                                         <i class="fas fa-eye" aria-hidden="true"></i>
                                     </a>
-                                    <a href="{{ route('certificates.edit', $certificate->id) }}" class="btn-icon edit-cert" title="Edit Certificate">
+                                    <a href="{{ route('certificates.edit', $certificate->cert_id) }}" class="btn-icon edit-cert" title="Edit Certificate">
                                         <i class="fas fa-edit" aria-hidden="true"></i>
                                     </a>
                                     <button class="btn-icon print-cert" data-id="{{ $certificate->id }}" title="Print Certificate">
                                         <i class="fas fa-print" aria-hidden="true"></i>
                                     </button>
-                                    <form action="archives/{{$certificate->id}}/archive" method="POST" class="d-inline archive-form" id="archive-form-{{ $certificate->id }}">
+                                    <form action="certificates/{{$certificate->cert_id}}/archiveDeath" method="POST" class="d-inline archive-form" id="archive-form-{{ $certificate->id }}">
                                         @csrf
                                         @method('PATCH')
-                                        <button type="button" class="btn-icon archive" title="Archive Certificate" data-employee-id="{{ $certificate->id }}" data-employee-name="{{ $certificate->deceased_first_name }} {{ $certificate->deceased_last_name }}">
+                                        <button type="button" class="btn-icon archive" title="Archive Certificate" data-employee-id="{{ $certificate->cert_id }}" data-employee-name="{{ $certificate->deceased->first_name }} {{ $certificate->deceased->last_name }}">
                                             <i class="fas fa-archive"></i>
                                         </button>
                                     </form>
@@ -199,9 +199,10 @@
                 </div>
                 
                 <div class="pagination">
-                   
+                    {{ $deathCertificates->links() ?? '' }}
                 </div>
-            </div> -->
+            </div>
+
         </div>
     </div>
 

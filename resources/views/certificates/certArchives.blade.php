@@ -104,7 +104,7 @@
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($certificate->created_at)->format('M d, Y') }}</td>
                                 <td class="cert-actions-cell">
-                                    <form action="certificates/{{$certificate->id}}/restore" method="POST" class="d-inline restore-form" id="restore-form-{{ $certificate->id }}">
+                                    <form action="certificates/{{$certificate->cert_id}}/restore" method="POST" class="d-inline restore-form" id="restore-form-{{ $certificate->id }}">
                                         @csrf
                                         @method('PATCH')
                                         <button type="button" class="btn-icon restore-cert" title="Restore Certificate" data-certificate-id="{{ $certificate->id }}" data-certificate-name="{{ $certificate->child->first_name }} {{ $certificate->child->last_name }}">
@@ -127,7 +127,7 @@
                 </div>
             </div>
 
-            <!-- Death Certificates Section
+            <!-- Death Certificates Section -->
             <div id="deathSection" class="cert-section">
                 <div class="section-header">
                     <h3><i class="fas fa-cross" aria-hidden="true"></i> Death Certificates</h3>
@@ -151,25 +151,21 @@
                             @forelse($deathCertificates ?? [] as $certificate)
                             <tr>
                                 <td>{{ $certificate->registry_no }}</td>
-                                <td>{{ $certificate->deceased_first_name }} {{ $certificate->deceased_middle_name }} {{ $certificate->deceased_last_name }}</td>
-                                <td>{{ $certificate->date_of_death->format('M d, Y') }}</td>
-                                <td>{{ $certificate->cause_of_death }}</td>
-                                <td>{{ $certificate->place_of_death }}, {{ $certificate->cityMunicipality->name }}</td>
-                                <td>{{ $certificate->created_at->format('M d, Y') }}</td>
+                                <td>{{ $certificate->deceased->first_name }} {{ $certificate->deceased->middle_name }} {{ $certificate->deceased->last_name }}</td>
+                                <td>{{ \Carbon\Carbon::parse($certificate->date_of_death)->format('M d, Y') }}</td>
+                                <td>{{ $deathCause->firstWhere('id', $certificate->death_cause_id)?->immediate_cause ?? 'N/A' }}</td>
+                                <td>{{ $certificate->deceased->place_of_death }}, {{ $certificate->cityMunicipality->name }}</td>
+                                <td>{{ \Carbon\Carbon::parse($certificate->created_at)->format('M d, Y') }}</td>
                                 <td class="cert-actions-cell">
-                                    <a href="{{ route('certificates.show', $certificate->id) }}" class="btn-icon view-cert" title="View Certificate">
-                                        <i class="fas fa-eye" aria-hidden="true"></i>
-                                    </a>
-                                    <a href="{{ route('certificates.edit', $certificate->id) }}" class="btn-icon edit-cert" title="Edit Certificate">
-                                        <i class="fas fa-edit" aria-hidden="true"></i>
-                                    </a>
-                                    <button class="btn-icon print-cert" data-id="{{ $certificate->id }}" title="Print Certificate">
-                                        <i class="fas fa-print" aria-hidden="true"></i>
-                                    </button>
-                                    <button class="btn-icon delete-cert" data-id="{{ $certificate->id }}" title="Delete Certificate">
-                                        <i class="fas fa-trash-alt" aria-hidden="true"></i>
-                                    </button>
+                                    <form action="certificates/{{$certificate->cert_id}}/restoreDeath" method="POST" class="d-inline restore-form" id="restore-form-{{ $certificate->id }}">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="button" class="btn-icon restore-cert" title="Restore Certificate" data-certificate-id="{{ $certificate->id }}" data-certificate-name="{{ $certificate->deceased->first_name }} {{ $certificate->deceased->last_name }}">
+                                            <i class="fas fa-undo-alt" aria-hidden="true"></i>
+                                        </button>
+                                    </form>
                                 </td>
+                                
                             </tr>
                             @empty
                             <tr>
@@ -183,7 +179,7 @@
                 <div class="pagination">
                    
                 </div>
-            </div> -->
+            </div>
         </div>
     </div>
 

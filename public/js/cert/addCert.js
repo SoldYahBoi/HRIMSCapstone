@@ -14,12 +14,16 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update active tab content
             tabContents.forEach(content => content.classList.remove('active'));
             document.getElementById(`${tabId}-tab`).classList.add('active');
+            
+            // Reinitialize dropdowns when switching tabs
+            setTimeout(() => {
+                setupProvinceRelationships();
+            }, 100);
         });
     });
     
-    // Load data for dropdowns
-    loadCountries();
-    loadProvinces();
+    // Initialize all dropdowns and relationships
+    initializeAllDropdowns();
     
     // Handle conditional fields visibility
     handleConditionalFields();
@@ -131,13 +135,274 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Country change events to load provinces
-    setupCountryProvinceRelationship('province_id', 'city_municipality_id');
-    setupCountryProvinceRelationship('child_place_of_birth_province_id', 'child_place_of_birth_city_municipality_id');
-    setupCountryProvinceRelationship('mother_residence_province_id', 'mother_residence_city_municipality_id', 'mother_residence_country_id');
-    setupCountryProvinceRelationship('father_residence_province_id', 'father_residence_city_municipality_id', 'father_residence_country_id');
-    setupCountryProvinceRelationship('marriage_place_province_id', 'marriage_place_city_municipality_id', 'marriage_place_country_id');
+    // Death Certificate Form Initialization
+    if (document.getElementById('deathCertificateForm')) {
+        // Handle form reset for death certificate
+        document.getElementById('resetDeathBtn').addEventListener('click', function() {
+            document.getElementById('deathCertificateForm').reset();
+            handleDeathCertificateConditionalFields();
+        });
+        
+        // Form validation before submission for death certificate
+        document.getElementById('deathCertificateForm').addEventListener('submit', function(event) {
+            if (!validateDeathCertificateForm()) {
+                event.preventDefault();
+            }
+        });
+        
+        // Death Attendant Type change event
+        document.getElementById('death_attendant_attendant_type').addEventListener('change', function() {
+            const otherAttendantField = document.getElementById('death_other_attendant_type_field');
+            const otherAttendantInput = document.getElementById('death_attendant_other_attendant_type');
+            
+            if (this.value === '5') { // Other
+                otherAttendantField.style.display = 'block';
+                otherAttendantInput.setAttribute('required', 'required');
+            } else {
+                otherAttendantField.style.display = 'none';
+                otherAttendantInput.removeAttribute('required');
+                otherAttendantInput.value = '';
+            }
+        });
+        
+        // Corpse Disposal Type change event
+        document.getElementById('corpse_disposal_type').addEventListener('change', function() {
+            const otherDisposalField = document.getElementById('other_disposal_type_field');
+            const otherDisposalInput = document.getElementById('corpse_disposal_other_type');
+            
+            if (this.value === 'Other') {
+                otherDisposalField.style.display = 'block';
+                otherDisposalInput.setAttribute('required', 'required');
+            } else {
+                otherDisposalField.style.display = 'none';
+                otherDisposalInput.removeAttribute('required');
+                otherDisposalInput.value = '';
+            }
+        });
+        
+        // Age Category change event
+        document.getElementById('deceased_age_category').addEventListener('change', function() {
+            const ageFields = document.querySelectorAll('.age-field');
+            ageFields.forEach(field => field.style.display = 'none');
+            
+            // Clear all age inputs
+            document.getElementById('deceased_age_years').value = '';
+            document.getElementById('deceased_age_months').value = '';
+            document.getElementById('deceased_age_days').value = '';
+            document.getElementById('deceased_age_hours').value = '';
+            document.getElementById('deceased_age_minutes').value = '';
+            
+            // Show relevant age fields based on selection
+            switch(this.value) {
+                case 'years':
+                    document.getElementById('age_years_field').style.display = 'block';
+                    document.getElementById('deceased_age_years').setAttribute('required', 'required');
+                    break;
+                case 'months':
+                    document.getElementById('age_months_field').style.display = 'block';
+                    document.getElementById('deceased_age_months').setAttribute('required', 'required');
+                    break;
+                case 'days':
+                    document.getElementById('age_days_field').style.display = 'block';
+                    document.getElementById('deceased_age_days').setAttribute('required', 'required');
+                    break;
+                case 'hours':
+                    document.getElementById('age_hours_field').style.display = 'block';
+                    document.getElementById('age_minutes_field').style.display = 'block';
+                    document.getElementById('deceased_age_hours').setAttribute('required', 'required');
+                    document.getElementById('deceased_age_minutes').setAttribute('required', 'required');
+                    break;
+            }
+        });
+        
+        // Initialize death certificate conditional fields
+        handleDeathCertificateConditionalFields();
+    }
 });
+
+// Initialize all dropdowns and relationships
+function initializeAllDropdowns() {
+    // Load countries and provinces
+    loadAllCountriesAndProvinces();
+    
+    // Setup province-city relationships
+    setupProvinceRelationships();
+}
+
+// Setup province-city relationships for both forms
+function setupProvinceRelationships() {
+    // Birth certificate form relationships
+    if (document.getElementById('birthCertificateForm')) {
+        setupDropdownRelationship('province_id', 'city_municipality_id');
+        setupDropdownRelationship('child_place_of_birth_province_id', 'child_place_of_birth_city_municipality_id');
+        setupDropdownRelationship('mother_residence_province_id', 'mother_residence_city_municipality_id');
+        setupDropdownRelationship('father_residence_province_id', 'father_residence_city_municipality_id');
+        setupDropdownRelationship('marriage_place_province_id', 'marriage_place_city_municipality_id');
+    }
+    
+    // Death certificate form relationships
+    if (document.getElementById('deathCertificateForm')) {
+        setupDropdownRelationship('death_province_id', 'death_city_municipality_id');
+        setupDropdownRelationship('deceased_residence_province_id', 'deceased_residence_city_municipality_id');
+    }
+}
+
+// Setup relationship between province and city dropdowns
+function setupDropdownRelationship(provinceSelectId, citySelectId) {
+    const provinceSelect = document.getElementById(provinceSelectId);
+    const citySelect = document.getElementById(citySelectId);
+    
+    if (!provinceSelect || !citySelect) return;
+    
+    // Clear existing event listeners (to prevent duplicates)
+    const newProvinceSelect = provinceSelect.cloneNode(true);
+    provinceSelect.parentNode.replaceChild(newProvinceSelect, provinceSelect);
+    
+    // Add event listener to province select
+    newProvinceSelect.addEventListener('change', function() {
+        const selectedProvinceId = this.value;
+        if (selectedProvinceId) {
+            loadCitiesForProvince(selectedProvinceId, citySelect);
+        } else {
+            // Clear city dropdown if no province selected
+            while (citySelect.options.length > 1) {
+                citySelect.remove(1);
+            }
+        }
+    });
+    
+    // Initial load of cities if province is already selected
+    if (newProvinceSelect.value) {
+        loadCitiesForProvince(newProvinceSelect.value, citySelect);
+    }
+}
+
+// Load cities for a specific province
+function loadCitiesForProvince(provinceId, citySelect) {
+    // Clear existing options except the first one
+    while (citySelect.options.length > 1) {
+        citySelect.remove(1);
+    }
+    
+    // Sample cities data - in a real app, this would come from an AJAX call
+    const cities = [
+        { id: 1, name: 'San Carlos', province_id: 1, is_city: true },
+        { id: 2, name: 'Urbiztondo', province_id: 1, is_city: false },
+        { id: 3, name: 'Dagupan', province_id: 1, is_city: true },
+        { id: 4, name: 'Lingayen', province_id: 1, is_city: false },
+        { id: 5, name: 'Alaminos', province_id: 1, is_city: true }
+    ];
+    
+    // Add filtered city options
+    const filteredCities = cities.filter(city => city.province_id == provinceId);
+    filteredCities.forEach(city => {
+        const option = document.createElement('option');
+        option.value = city.id;
+        option.textContent = city.name + (city.is_city ? ' City' : '');
+        citySelect.appendChild(option);
+    });
+}
+
+// Load all countries and provinces
+function loadAllCountriesAndProvinces() {
+    // Load countries for all country dropdowns
+    const countrySelects = document.querySelectorAll('select[id$="country_id"]');
+    countrySelects.forEach(select => {
+        loadCountriesForSelect(select);
+        
+        // Add event listener for country change
+        select.addEventListener('change', function() {
+            const countryId = this.value;
+            const selectId = this.id;
+            const provinceSelectId = selectId.replace('country', 'province');
+            const provinceSelect = document.getElementById(provinceSelectId);
+            
+            if (provinceSelect) {
+                loadProvincesForSelect(provinceSelect, countryId);
+            }
+        });
+    });
+    
+    // Load provinces for all province dropdowns
+    const provinceSelects = document.querySelectorAll('select[id$="province_id"]');
+    provinceSelects.forEach(select => {
+        // Get country ID if this is a province select that depends on a country
+        let countryId = 1; // Default to Philippines
+        const selectId = select.id;
+        if (selectId.includes('residence') || selectId.includes('place')) {
+            const countrySelectId = selectId.replace('province', 'country');
+            const countrySelect = document.getElementById(countrySelectId);
+            if (countrySelect && countrySelect.value) {
+                countryId = countrySelect.value;
+            }
+        }
+        
+        loadProvincesForSelect(select, countryId);
+    });
+}
+
+// Load countries for a select element
+function loadCountriesForSelect(select) {
+    // Clear existing options except the first one
+    while (select.options.length > 1) {
+        select.remove(1);
+    }
+    
+    // Sample countries data
+    const countries = [
+        { id: 1, name: 'Philippines', code: 'PHL' },
+        { id: 2, name: 'United States', code: 'USA' },
+        { id: 3, name: 'Japan', code: 'JPN' }
+    ];
+    
+    // Add country options
+    countries.forEach(country => {
+        const option = document.createElement('option');
+        option.value = country.id;
+        option.textContent = country.name;
+        select.appendChild(option);
+    });
+    
+    // Set Philippines as default
+    select.value = '1';
+}
+
+// Load provinces for a select element
+function loadProvincesForSelect(select, countryId = 1) {
+    // Clear existing options except the first one
+    while (select.options.length > 1) {
+        select.remove(1);
+    }
+    
+    // Sample provinces data
+    const provinces = [
+        { id: 1, name: 'Pangasinan', country_id: 1 },
+        { id: 2, name: 'Metro Manila', country_id: 1 },
+        { id: 3, name: 'Cebu', country_id: 1 },
+        { id: 4, name: 'Davao', country_id: 1 },
+        { id: 5, name: 'California', country_id: 2 },
+        { id: 6, name: 'New York', country_id: 2 },
+        { id: 7, name: 'Tokyo', country_id: 3 },
+        { id: 8, name: 'Osaka', country_id: 3 }
+    ];
+    
+    // Add filtered province options
+    const filteredProvinces = provinces.filter(province => province.country_id == countryId);
+    filteredProvinces.forEach(province => {
+        const option = document.createElement('option');
+        option.value = province.id;
+        option.textContent = province.name;
+        select.appendChild(option);
+    });
+    
+    // Set first province as default
+    if (filteredProvinces.length > 0) {
+        select.value = filteredProvinces[0].id;
+    }
+    
+    // Trigger change event to load cities
+    select.dispatchEvent(new Event('change'));
+}
 
 // Helper functions
 function handleConditionalFields() {
@@ -182,186 +447,49 @@ function handleConditionalFields() {
     }
 }
 
-function loadCountries() {
-    // In a real application, this would be an AJAX call to fetch countries from the server
-    // For this example, we'll use a simplified approach with some common countries
-    const countries = [
-        { id: 1, name: 'Philippines', code: 'PHL' }
-        // { id: 2, name: 'United States', code: 'USA' },
-        // { id: 3, name: 'Japan', code: 'JPN' }
-    ];
+function handleDeathCertificateConditionalFields() {
+    // Initial setup for death attendant type
+    const deathAttendantType = document.getElementById('death_attendant_attendant_type');
+    const deathOtherAttendantField = document.getElementById('death_other_attendant_type_field');
     
-    const countrySelects = document.querySelectorAll('select[id$="country_id"]');
-    
-    countrySelects.forEach(select => {
-        // Clear existing options except the first one (placeholder)
-        while (select.options.length > 1) {
-            select.remove(1);
-        }
-        
-        // Add country options
-        countries.forEach(country => {
-            const option = document.createElement('option');
-            option.value = country.id;
-            option.textContent = country.name;
-            select.appendChild(option);
-        });
-        
-        // Set Philippines as default for country selects
-        if (!select.value) {
-            select.value = '1'; // Philippines ID
-        }
-    });
-}
-
-function loadProvinces(countryId = 1) {
-    // In a real application, this would be an AJAX call to fetch provinces for the selected country
-    // For this example, we'll use some sample provinces in the Philippines
-    const provinces = [
-        { id: 1, name: 'Pangasinan', country_id: 1 }
-        // { id: 2, name: 'Cebu', country_id: 1 },
-        // { id: 3, name: 'Davao', country_id: 1 },
-        // { id: 4, name: 'California', country_id: 2 },
-        // { id: 5, name: 'New York', country_id: 2 },
-        // { id: 6, name: 'Tokyo', country_id: 3 },
-        // { id: 7, name: 'Osaka', country_id: 3 }
-    ];
-    
-    const provinceSelects = document.querySelectorAll('select[id$="province_id"]');
-    
-    provinceSelects.forEach(select => {
-        // Clear existing options except the first one
-        while (select.options.length > 1) {
-            select.remove(1);
-        }
-        
-        // Add filtered province options
-        const filteredProvinces = provinces.filter(province => province.country_id == countryId);
-        filteredProvinces.forEach(province => {
-            const option = document.createElement('option');
-            option.value = province.id;
-            option.textContent = province.name;
-            select.appendChild(option);
-        });
-        
-        // Trigger change event to load cities
-        select.dispatchEvent(new Event('change'));
-    });
-}
-
-function loadCities(provinceId = 1) {
-    // In a real application, this would be an AJAX call to fetch cities for the selected province
-    // For this example, we'll use some sample cities
-    const cities = [
-        { id: 1, name: 'San Carlos', province_id: 1, is_city: true },
-        { id: 2, name: 'Urbiztondo', province_id: 1, is_city: true },
-        { id: 3, name: 'Dagupan', province_id: 1, is_city: true }
-        // { id: 4, name: 'Cebu City', province_id: 2, is_city: true },
-        // { id: 5, name: 'Mandaue', province_id: 2, is_city: true },
-        // { id: 6, name: 'Davao City', province_id: 3, is_city: true },
-        // { id: 7, name: 'Los Angeles', province_id: 4, is_city: true },
-        // { id: 8, name: 'San Francisco', province_id: 4, is_city: true },
-        // { id: 9, name: 'New York City', province_id: 5, is_city: true },
-        // { id: 10, name: 'Shinjuku', province_id: 6, is_city: false },
-        // { id: 11, name: 'Shibuya', province_id: 6, is_city: false },
-        // { id: 12, name: 'Namba', province_id: 7, is_city: false }
-    ];
-    
-    const citySelects = document.querySelectorAll('select[id$="city_municipality_id"]');
-    
-    citySelects.forEach(select => {
-        // Clear existing options except the first one
-        while (select.options.length > 1) {
-            select.remove(1);
-        }
-        
-        // Add filtered city options
-        const filteredCities = cities.filter(city => city.province_id == provinceId);
-        filteredCities.forEach(city => {
-            const option = document.createElement('option');
-            option.value = city.id;
-            option.textContent = city.name + (city.is_city ? ' City' : '');
-            select.appendChild(option);
-        });
-    });
-}
-
-function setupCountryProvinceRelationship(provinceSelectId, citySelectId, countrySelectId = null) {
-    const provinceSelect = document.getElementById(provinceSelectId);
-    const citySelect = document.getElementById(citySelectId);
-    
-    if (countrySelectId) {
-        const countrySelect = document.getElementById(countrySelectId);
-        countrySelect.addEventListener('change', function() {
-            const selectedCountryId = this.value;
-            if (selectedCountryId) {
-                // Load provinces for the selected country
-                const provinces = [
-                    { id: 1, name: 'Pangasinan', country_id: 1 }
-                    // { id: 2, name: 'Cebu', country_id: 1 },
-                    // { id: 3, name: 'Davao', country_id: 1 },
-                    // { id: 4, name: 'California', country_id: 2 },
-                    // { id: 5, name: 'New York', country_id: 2 },
-                    // { id: 6, name: 'Tokyo', country_id: 3 },
-                    // { id: 7, name: 'Osaka', country_id: 3 }
-                ];
-                
-                // Clear existing options except the first one
-                while (provinceSelect.options.length > 1) {
-                    provinceSelect.remove(1);
-                }
-                
-                // Add filtered province options
-                const filteredProvinces = provinces.filter(province => province.country_id == selectedCountryId);
-                filteredProvinces.forEach(province => {
-                    const option = document.createElement('option');
-                    option.value = province.id;
-                    option.textContent = province.name;
-                    provinceSelect.appendChild(option);
-                });
-                
-                // Clear city dropdown
-                while (citySelect.options.length > 1) {
-                    citySelect.remove(1);
-                }
-            }
-        });
+    if (deathAttendantType && deathAttendantType.value === '5') {
+        deathOtherAttendantField.style.display = 'block';
+    } else if (deathOtherAttendantField) {
+        deathOtherAttendantField.style.display = 'none';
     }
     
-    provinceSelect.addEventListener('change', function() {
-        const selectedProvinceId = this.value;
-        if (selectedProvinceId) {
-            // Load cities for the selected province
-            const cities = [
-                { id: 1, name: 'San Carlos', province_id: 1, is_city: true },
-                { id: 2, name: 'Urbiztondo', province_id: 1, is_city: true },
-                { id: 3, name: 'Dagupan', province_id: 1, is_city: true }
-                // { id: 4, name: 'Cebu City', province_id: 2, is_city: true },
-                // { id: 5, name: 'Mandaue', province_id: 2, is_city: true },
-                // { id: 6, name: 'Davao City', province_id: 3, is_city: true },
-                // { id: 7, name: 'Los Angeles', province_id: 4, is_city: true },
-                // { id: 8, name: 'San Francisco', province_id: 4, is_city: true },
-                // { id: 9, name: 'New York City', province_id: 5, is_city: true },
-                // { id: 10, name: 'Shinjuku', province_id: 6, is_city: false },
-                // { id: 11, name: 'Shibuya', province_id: 6, is_city: false },
-                // { id: 12, name: 'Namba', province_id: 7, is_city: false }
-            ];
-            
-            // Clear existing options except the first one
-            while (citySelect.options.length > 1) {
-                citySelect.remove(1);
-            }
-            
-            // Add filtered city options
-            const filteredCities = cities.filter(city => city.province_id == selectedProvinceId);
-            filteredCities.forEach(city => {
-                const option = document.createElement('option');
-                option.value = city.id;
-                option.textContent = city.name + (city.is_city ? ' City' : '');
-                citySelect.appendChild(option);
-            });
+    // Initial setup for corpse disposal type
+    const disposalType = document.getElementById('corpse_disposal_type');
+    const otherDisposalField = document.getElementById('other_disposal_type_field');
+    
+    if (disposalType && disposalType.value === 'Other') {
+        otherDisposalField.style.display = 'block';
+    } else if (otherDisposalField) {
+        otherDisposalField.style.display = 'none';
+    }
+    
+    // Initial setup for age category
+    const ageCategory = document.getElementById('deceased_age_category');
+    if (ageCategory) {
+        const ageFields = document.querySelectorAll('.age-field');
+        ageFields.forEach(field => field.style.display = 'none');
+        
+        switch(ageCategory.value) {
+            case 'years':
+                document.getElementById('age_years_field').style.display = 'block';
+                break;
+            case 'months':
+                document.getElementById('age_months_field').style.display = 'block';
+                break;
+            case 'days':
+                document.getElementById('age_days_field').style.display = 'block';
+                break;
+            case 'hours':
+                document.getElementById('age_hours_field').style.display = 'block';
+                document.getElementById('age_minutes_field').style.display = 'block';
+                break;
         }
-    });
+    }
 }
 
 function enableRequiredFields(containerId) {
@@ -385,6 +513,45 @@ function disableRequiredFields(containerId) {
 function validateForm() {
     let isValid = true;
     const form = document.getElementById('birthCertificateForm');
+    const requiredFields = form.querySelectorAll('[required]');
+    
+    // Clear previous error messages
+    const errorMessages = form.querySelectorAll('.error-message');
+    errorMessages.forEach(message => message.remove());
+    
+    // Reset error class
+    const formElements = form.querySelectorAll('input, select, textarea');
+    formElements.forEach(element => element.classList.remove('error'));
+    
+    // Validate required fields
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            isValid = false;
+            field.classList.add('error');
+            
+            // Add error message
+            const errorMessage = document.createElement('span');
+            errorMessage.classList.add('error-message');
+            errorMessage.textContent = 'This field is required.';
+            field.parentNode.appendChild(errorMessage);
+        }
+    });
+    
+    // If the form is invalid, scroll to the first error
+    if (!isValid) {
+        const firstError = form.querySelector('.error');
+        if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            firstError.focus();
+        }
+    }
+    
+    return isValid;
+}
+
+function validateDeathCertificateForm() {
+    let isValid = true;
+    const form = document.getElementById('deathCertificateForm');
     const requiredFields = form.querySelectorAll('[required]');
     
     // Clear previous error messages

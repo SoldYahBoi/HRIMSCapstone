@@ -19,6 +19,12 @@ use App\Models\Country;
 use App\Models\Official;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Models\Deceased;
+use App\Models\DeathCause;
+use App\Models\DeathAttendant;
+use App\Models\DeathInformant;
+use App\Models\CorpseDisposal;
+use App\Models\DeathCertificate;
 
 class PagesController extends Controller
 {
@@ -57,6 +63,15 @@ class PagesController extends Controller
         $informant = Informant::all();
         $official = Official::all();
         $cityMunicipality = CityMunicipality::all();
+
+
+        $deathCertificates = DeathCertificate::where('status','Archived')->paginate(5);
+        $deceased = Deceased::all();
+        $deathCause = DeathCause::all();
+        $deathAttendant = DeathAttendant::all();
+        $deathInformant = DeathInformant::all();
+        $corpseDisposal = CorpseDisposal::all();
+        $count2 = DeathCertificate::where('status','Archived')->count();
         
         // $deathCertificates = DeathCertificate::paginate(5);
         return view('certificates.certArchives')->with('birthCertificates', $birthCertificates)
@@ -68,6 +83,13 @@ class PagesController extends Controller
             ->with('informant', $informant)
             ->with('official', $official)
             ->with('cityMunicipality', $cityMunicipality)
-            ->with('count', $count);
+            ->with('count', $count)
+            ->with('deathCertificates', $deathCertificates)
+            ->with('deceased', $deceased)
+            ->with('deathCause', $deathCause)
+            ->with('deathAttendant', $deathAttendant)
+            ->with('deathInformant', $deathInformant)
+            ->with('corpseDisposal', $corpseDisposal)
+            ->with('count2', $count2);
     }
 }

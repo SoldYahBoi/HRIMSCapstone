@@ -17,6 +17,10 @@
         <a href="{{ route('certificates.index') }}" class="btn btn-outline">
             <i class="fas fa-arrow-left" aria-hidden="true"></i> Back to Certificate List
         </a>
+        
+        <button id="downloadPdf" class="btn btn-primary">
+                <i class="fas fa-download" aria-hidden="true"></i> Download as PDF
+        </button>
     </div>
 @endsection
 
@@ -26,11 +30,6 @@
             {{ session('success') }}
         </div>
     @endif
-    <div class="page-actions">
-        <button id="downloadPdf" class="btn btn-primary">
-                <i class="fas fa-download" aria-hidden="true"></i> Download as PDF
-        </button>
-    </div>
     <div class="certificate-container" id="certificate">
         <div class="certificate-header">
             <div class="header-text">
