@@ -92,4 +92,9 @@ class PagesController extends Controller
             ->with('corpseDisposal', $corpseDisposal)
             ->with('count2', $count2);
     }
+
+    public function home()
+    {
+        return view('home');
+    }
 }

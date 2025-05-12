@@ -6,6 +6,7 @@
 
 @section('head')
     <link rel="stylesheet" href="{{ asset('css/recruit/recruit.css') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
 
 @section('page-title')
@@ -26,22 +27,22 @@
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-card-title">Open Positions</div>
-            <div class="stat-card-value">12</div>
+            <div class="stat-card-value">{{ $stats['openPositions'] }}</div>
             <div class="stat-card-icon"><i class="fas fa-briefcase" aria-hidden="true"></i></div>
         </div>
         <div class="stat-card">
             <div class="stat-card-title">New Applications</div>
-            <div class="stat-card-value">28</div>
+            <div class="stat-card-value">{{ $stats['newApplications'] }}</div>
             <div class="stat-card-icon"><i class="fas fa-file-alt" aria-hidden="true"></i></div>
         </div>
         <div class="stat-card">
             <div class="stat-card-title">Interviews Scheduled</div>
-            <div class="stat-card-value">8</div>
+            <div class="stat-card-value">{{ $stats['interviewsScheduled'] }}</div>
             <div class="stat-card-icon"><i class="fas fa-calendar-check" aria-hidden="true"></i></div>
         </div>
         <div class="stat-card">
             <div class="stat-card-title">Positions Filled</div>
-            <div class="stat-card-value">5</div>
+            <div class="stat-card-value">{{ $stats['positionsFilled'] }}</div>
             <div class="stat-card-icon"><i class="fas fa-user-check" aria-hidden="true"></i></div>
         </div>
     </div>
@@ -77,197 +78,68 @@
                     <div class="filter-container">
                         <select id="departmentFilter" class="form-control">
                             <option value="all">All Departments</option>
-                            <option value="nursing">Nursing</option>
-                            <option value="admin">Administration</option>
-                            <option value="pharmacy">Pharmacy</option>
-                            <option value="laboratory">Laboratory</option>
-                            <option value="radiology">Radiology</option>
-                            <option value="emergency">Emergency</option>
+                            @foreach($departments as $department)
+                                <option value="{{ $department->id }}">{{ $department->department_name }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
             </div>
 
             <div class="positions-grid">
-                <!-- Position Card 1 -->
-                <div class="position-card">
-                    <div class="position-header">
-                        <span class="department-badge dept-nursing">Nursing</span>
-                        <div class="position-actions">
-                            <button class="btn-icon edit-position" data-id="1" title="Edit Position">
-                                <i class="fas fa-edit" aria-hidden="true"></i>
+                @forelse($openPositions as $position)
+                    <div class="position-card">
+                        <div class="position-header">
+                            <span class="department-badge dept-{{ strtolower($position->department->department_name) }}">{{ $position->department->department_name }}</span>
+                            <div class="position-actions">
+                                <button class="btn-icon edit-position" data-id="{{ $position->id }}" title="Edit Position">
+                                    <i class="fas fa-edit" aria-hidden="true"></i>
+                                </button>
+                                <button class="btn-icon delete-position" data-id="{{ $position->id }}" title="Delete Position">
+                                    <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <h4 class="position-title">{{ $position->position->position_name }}</h4>
+                        <div class="position-meta">
+                            <span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> {{ $position->location }}</span>
+                            <span><i class="fas fa-clock" aria-hidden="true"></i> {{ $position->employment_type }}</span>
+                        </div>
+                        <p class="position-description">
+                            {{ Str::limit($position->description, 150) }}
+                        </p>
+                        <div class="position-stats">
+                            <div class="stat">
+                                <span class="stat-value">{{ $position->applicant_count }}</span>
+                                <span class="stat-label">Applicants</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">{{ $position->interview_count }}</span>
+                                <span class="stat-label">Interviews</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">{{ \Carbon\Carbon::parse($position->application_deadline)->format('M d') }}</span>
+                                <span class="stat-label">Deadline</span>
+                            </div>
+                        </div>
+                        <div class="position-footer">
+                            <button class="btn btn-outline view-applicants" data-id="{{ $position->id }}">
+                                <i class="fas fa-users" aria-hidden="true"></i> View Applicants
                             </button>
-                            <button class="btn-icon delete-position" data-id="1" title="Delete Position">
-                                <i class="fas fa-trash-alt" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <h4 class="position-title">Head Nurse - Pediatrics</h4>
-                    <div class="position-meta">
-                        <span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Main Hospital</span>
-                        <span><i class="fas fa-clock" aria-hidden="true"></i> Full-time</span>
-                    </div>
-                    <p class="position-description">
-                        Experienced head nurse needed to lead our pediatric department. Minimum 5 years experience required.
-                    </p>
-                    <div class="position-stats">
-                        <div class="stat">
-                            <span class="stat-value">8</span>
-                            <span class="stat-label">Applicants</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-value">3</span>
-                            <span class="stat-label">Interviews</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-value">Jun 30</span>
-                            <span class="stat-label">Deadline</span>
-                        </div>
-                    </div>
-                    <div class="position-footer">
-                        <button class="btn btn-outline view-applicants" data-id="1">
-                            <i class="fas fa-users" aria-hidden="true"></i> View Applicants
-                        </button>
-                        <button class="btn btn-primary">
-                            <i class="fas fa-share-alt" aria-hidden="true"></i> Share
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Position Card 2 -->
-                <div class="position-card">
-                    <div class="position-header">
-                        <span class="department-badge dept-pharmacy">Pharmacy</span>
-                        <div class="position-actions">
-                            <button class="btn-icon edit-position" data-id="2" title="Edit Position">
-                                <i class="fas fa-edit" aria-hidden="true"></i>
-                            </button>
-                            <button class="btn-icon delete-position" data-id="2" title="Delete Position">
-                                <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-share-alt" aria-hidden="true"></i> Share
                             </button>
                         </div>
                     </div>
-                    <h4 class="position-title">Clinical Pharmacist</h4>
-                    <div class="position-meta">
-                        <span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> East Wing</span>
-                        <span><i class="fas fa-clock" aria-hidden="true"></i> Full-time</span>
-                    </div>
-                    <p class="position-description">
-                        Clinical pharmacist needed to join our growing team. Must have experience in hospital pharmacy settings.
-                    </p>
-                    <div class="position-stats">
-                        <div class="stat">
-                            <span class="stat-value">12</span>
-                            <span class="stat-label">Applicants</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-value">5</span>
-                            <span class="stat-label">Interviews</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-value">Jul 15</span>
-                            <span class="stat-label">Deadline</span>
-                        </div>
-                    </div>
-                    <div class="position-footer">
-                        <button class="btn btn-outline view-applicants" data-id="2">
-                            <i class="fas fa-users" aria-hidden="true"></i> View Applicants
-                        </button>
-                        <button class="btn btn-primary">
-                            <i class="fas fa-share-alt" aria-hidden="true"></i> Share
+                @empty
+                    <div class="empty-state">
+                        <i class="fas fa-briefcase" aria-hidden="true"></i>
+                        <p>No open positions found.</p>
+                        <button id="emptyStateAddPositionBtn" class="btn btn-primary">
+                            <i class="fas fa-plus" aria-hidden="true"></i> Post New Position
                         </button>
                     </div>
-                </div>
-
-                <!-- Position Card 3 -->
-                <div class="position-card">
-                    <div class="position-header">
-                        <span class="department-badge dept-laboratory">Laboratory</span>
-                        <div class="position-actions">
-                            <button class="btn-icon edit-position" data-id="3" title="Edit Position">
-                                <i class="fas fa-edit" aria-hidden="true"></i>
-                            </button>
-                            <button class="btn-icon delete-position" data-id="3" title="Delete Position">
-                                <i class="fas fa-trash-alt" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <h4 class="position-title">Medical Laboratory Technician</h4>
-                    <div class="position-meta">
-                        <span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Main Laboratory</span>
-                        <span><i class="fas fa-clock" aria-hidden="true"></i> Part-time</span>
-                    </div>
-                    <p class="position-description">
-                        Medical laboratory technician needed for sample processing and analysis. Evening shifts available.
-                    </p>
-                    <div class="position-stats">
-                        <div class="stat">
-                            <span class="stat-value">6</span>
-                            <span class="stat-label">Applicants</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-value">0</span>
-                            <span class="stat-label">Interviews</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-value">Aug 5</span>
-                            <span class="stat-label">Deadline</span>
-                        </div>
-                    </div>
-                    <div class="position-footer">
-                        <button class="btn btn-outline view-applicants" data-id="3">
-                            <i class="fas fa-users" aria-hidden="true"></i> View Applicants
-                        </button>
-                        <button class="btn btn-primary">
-                            <i class="fas fa-share-alt" aria-hidden="true"></i> Share
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Position Card 4 -->
-                <div class="position-card">
-                    <div class="position-header">
-                        <span class="department-badge dept-admin">Administration</span>
-                        <div class="position-actions">
-                            <button class="btn-icon edit-position" data-id="4" title="Edit Position">
-                                <i class="fas fa-edit" aria-hidden="true"></i>
-                            </button>
-                            <button class="btn-icon delete-position" data-id="4" title="Delete Position">
-                                <i class="fas fa-trash-alt" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <h4 class="position-title">Administrative Assistant</h4>
-                    <div class="position-meta">
-                        <span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Admin Office</span>
-                        <span><i class="fas fa-clock" aria-hidden="true"></i> Full-time</span>
-                    </div>
-                    <p class="position-description">
-                        Administrative assistant needed to support hospital operations. Strong organizational skills required.
-                    </p>
-                    <div class="position-stats">
-                        <div class="stat">
-                            <span class="stat-value">15</span>
-                            <span class="stat-label">Applicants</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-value">7</span>
-                            <span class="stat-label">Interviews</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-value">Jun 20</span>
-                            <span class="stat-label">Deadline</span>
-                        </div>
-                    </div>
-                    <div class="position-footer">
-                        <button class="btn btn-outline view-applicants" data-id="4">
-                            <i class="fas fa-users" aria-hidden="true"></i> View Applicants
-                        </button>
-                        <button class="btn btn-primary">
-                            <i class="fas fa-share-alt" aria-hidden="true"></i> Share
-                        </button>
-                    </div>
-                </div>
+                @endforelse
             </div>
         </div>
 
@@ -308,150 +180,69 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>
-                                <div class="applicant-info">
-                                    <div class="applicant-avatar">JD</div>
-                                    <div>
-                                        <div class="applicant-name">John Doe</div>
-                                        <div class="applicant-email">john.doe@example.com</div>
+                        @forelse($applications as $application)
+                            <tr data-id="{{ $application->id }}">
+                                <td>
+                                    <div class="applicant-info">
+                                        <div class="applicant-avatar">{{ substr($application->applicant->first_name, 0, 1) }}{{ substr($application->applicant->last_name, 0, 1) }}</div>
+                                        <div>
+                                            <div class="applicant-name">{{ $application->applicant->first_name }} {{ $application->applicant->last_name }}</div>
+                                            <div class="applicant-email">{{ $application->applicant->email }}</div>
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                            <td>Head Nurse - Pediatrics</td>
-                            <td><span class="department-badge dept-nursing">Nursing</span></td>
-                            <td>Jun 5, 2023</td>
-                            <td><span class="status-badge status-new">New</span></td>
-                            <td>
-                                <div class="application-actions">
-                                    <button class="btn-icon view-application" data-id="1" title="View Application">
-                                        <i class="fas fa-eye" aria-hidden="true"></i>
-                                    </button>
-                                    <button class="btn-icon schedule-interview" data-id="1" title="Schedule Interview">
-                                        <i class="fas fa-calendar-plus" aria-hidden="true"></i>
-                                    </button>
-                                    <button class="btn-icon reject-application" data-id="1" title="Reject Application">
-                                        <i class="fas fa-times-circle" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="applicant-info">
-                                    <div class="applicant-avatar">JS</div>
-                                    <div>
-                                        <div class="applicant-name">Jane Smith</div>
-                                        <div class="applicant-email">jane.smith@example.com</div>
+                                </td>
+                                <td>{{ $application->jobPosting->position->position_name }}</td>
+                                <td><span class="department-badge dept-{{ strtolower($application->jobPosting->department->department_name) }}">{{ $application->jobPosting->department->department_name }}</span></td>
+                                <td>{{ $application->created_at->format('M d, Y') }}</td>
+                                <td><span class="status-badge status-{{ $application->status }}">{{ ucfirst($application->status) }}</span></td>
+                                <td>
+                                    <div class="application-actions">
+                                        <button class="btn-icon view-application" data-id="{{ $application->id }}" title="View Application">
+                                            <i class="fas fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                        @if($application->status != 'hired' && $application->status != 'rejected')
+                                            <button class="btn-icon schedule-interview" data-id="{{ $application->id }}" title="Schedule Interview">
+                                                <i class="fas fa-calendar-plus" aria-hidden="true"></i>
+                                            </button>
+                                        @endif
+                                        @if($application->status == 'interview')
+                                            <button class="btn-icon hire-applicant" data-id="{{ $application->id }}" title="Hire Applicant">
+                                                <i class="fas fa-user-check" aria-hidden="true"></i>
+                                            </button>
+                                        @endif
+                                        @if($application->status != 'hired' && $application->status != 'rejected')
+                                            <button class="btn-icon reject-application" data-id="{{ $application->id }}" title="Reject Application">
+                                                <i class="fas fa-times-circle" aria-hidden="true"></i>
+                                            </button>
+                                        @endif
+                                        @if($application->status == 'hired')
+                                            <button class="btn-icon onboarding" data-id="{{ $application->id }}" title="Start Onboarding">
+                                                <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+                                            </button>
+                                        @endif
+                                        @if($application->status == 'rejected')
+                                            <button class="btn-icon restore-application" data-id="{{ $application->id }}" title="Restore Application">
+                                                <i class="fas fa-undo" aria-hidden="true"></i>
+                                            </button>
+                                        @endif
                                     </div>
-                                </div>
-                            </td>
-                            <td>Clinical Pharmacist</td>
-                            <td><span class="department-badge dept-pharmacy">Pharmacy</span></td>
-                            <td>Jun 8, 2023</td>
-                            <td><span class="status-badge status-reviewing">Reviewing</span></td>
-                            <td>
-                                <div class="application-actions">
-                                    <button class="btn-icon view-application" data-id="2" title="View Application">
-                                        <i class="fas fa-eye" aria-hidden="true"></i>
-                                    </button>
-                                    <button class="btn-icon schedule-interview" data-id="2" title="Schedule Interview">
-                                        <i class="fas fa-calendar-plus" aria-hidden="true"></i>
-                                    </button>
-                                    <button class="btn-icon reject-application" data-id="2" title="Reject Application">
-                                        <i class="fas fa-times-circle" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="applicant-info">
-                                    <div class="applicant-avatar">MJ</div>
-                                    <div>
-                                        <div class="applicant-name">Mike Johnson</div>
-                                        <div class="applicant-email">mike.j@example.com</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>Medical Laboratory Technician</td>
-                            <td><span class="department-badge dept-laboratory">Laboratory</span></td>
-                            <td>Jun 10, 2023</td>
-                            <td><span class="status-badge status-interview">Interview</span></td>
-                            <td>
-                                <div class="application-actions">
-                                    <button class="btn-icon view-application" data-id="3" title="View Application">
-                                        <i class="fas fa-eye" aria-hidden="true"></i>
-                                    </button>
-                                    <button class="btn-icon hire-applicant" data-id="3" title="Hire Applicant">
-                                        <i class="fas fa-user-check" aria-hidden="true"></i>
-                                    </button>
-                                    <button class="btn-icon reject-application" data-id="3" title="Reject Application">
-                                        <i class="fas fa-times-circle" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="applicant-info">
-                                    <div class="applicant-avatar">SR</div>
-                                    <div>
-                                        <div class="applicant-name">Sarah Rodriguez</div>
-                                        <div class="applicant-email">sarah.r@example.com</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>Administrative Assistant</td>
-                            <td><span class="department-badge dept-admin">Administration</span></td>
-                            <td>Jun 12, 2023</td>
-                            <td><span class="status-badge status-hired">Hired</span></td>
-                            <td>
-                                <div class="application-actions">
-                                    <button class="btn-icon view-application" data-id="4" title="View Application">
-                                        <i class="fas fa-eye" aria-hidden="true"></i>
-                                    </button>
-                                    <button class="btn-icon onboarding" data-id="4" title="Start Onboarding">
-                                        <i class="fas fa-clipboard-list" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="applicant-info">
-                                    <div class="applicant-avatar">TW</div>
-                                    <div>
-                                        <div class="applicant-name">Tom Wilson</div>
-                                        <div class="applicant-email">tom.w@example.com</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>Head Nurse - Pediatrics</td>
-                            <td><span class="department-badge dept-nursing">Nursing</span></td>
-                            <td>Jun 15, 2023</td>
-                            <td><span class="status-badge status-rejected">Rejected</span></td>
-                            <td>
-                                <div class="application-actions">
-                                    <button class="btn-icon view-application" data-id="5" title="View Application">
-                                        <i class="fas fa-eye" aria-hidden="true"></i>
-                                    </button>
-                                    <button class="btn-icon restore-application" data-id="5" title="Restore Application">
-                                        <i class="fas fa-undo" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center">No applications found.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
 
             <div class="pagination">
-                <button class="btn btn-outline pagination-btn" disabled>
+                <button class="btn btn-outline pagination-btn" {{ $applications->onFirstPage() ? 'disabled' : '' }}>
                     <i class="fas fa-chevron-left" aria-hidden="true"></i> Previous
                 </button>
-                <span class="pagination-info">Page 1 of 1</span>
-                <button class="btn btn-outline pagination-btn" disabled>
+                <span class="pagination-info">Page {{ $applications->currentPage() }} of {{ $applications->lastPage() }}</span>
+                <button class="btn btn-outline pagination-btn" {{ $applications->hasMorePages() ? '' : 'disabled' }}>
                     Next <i class="fas fa-chevron-right" aria-hidden="true"></i>
                 </button>
             </div>
@@ -462,7 +253,7 @@
             <div class="tab-header">
                 <h3>Scheduled Interviews</h3>
                 <div class="tab-actions">
-                    <button class="btn btn-primary">
+                    <button class="btn btn-primary" id="scheduleNewInterviewBtn">
                         <i class="fas fa-calendar-plus" aria-hidden="true"></i> Schedule New Interview
                     </button>
                 </div>
@@ -473,7 +264,7 @@
                     <button class="btn btn-outline calendar-nav-btn">
                         <i class="fas fa-chevron-left" aria-hidden="true"></i>
                     </button>
-                    <h4>June 2023</h4>
+                    <h4>{{ $currentMonth->format('F Y') }}</h4>
                     <button class="btn btn-outline calendar-nav-btn">
                         <i class="fas fa-chevron-right" aria-hidden="true"></i>
                     </button>
@@ -489,134 +280,46 @@
                     <div class="calendar-day-header">Sat</div>
                     
                     <!-- Calendar days -->
-                    <div class="calendar-day inactive">28</div>
-                    <div class="calendar-day inactive">29</div>
-                    <div class="calendar-day inactive">30</div>
-                    <div class="calendar-day inactive">31</div>
-                    <div class="calendar-day">1</div>
-                    <div class="calendar-day">2</div>
-                    <div class="calendar-day">3</div>
-                    <div class="calendar-day">4</div>
-                    <div class="calendar-day">5</div>
-                    <div class="calendar-day">6</div>
-                    <div class="calendar-day">7</div>
-                    <div class="calendar-day">8</div>
-                    <div class="calendar-day">9</div>
-                    <div class="calendar-day">10</div>
-                    <div class="calendar-day">11</div>
-                    <div class="calendar-day">12</div>
-                    <div class="calendar-day">13</div>
-                    <div class="calendar-day">14</div>
-                    <div class="calendar-day">15</div>
-                    <div class="calendar-day has-events">
-                        16
-                        <div class="event-indicator" data-count="2"></div>
-                    </div>
-                    <div class="calendar-day">17</div>
-                    <div class="calendar-day">18</div>
-                    <div class="calendar-day has-events">
-                        19
-                        <div class="event-indicator" data-count="3"></div>
-                    </div>
-                    <div class="calendar-day">20</div>
-                    <div class="calendar-day has-events">
-                        21
-                        <div class="event-indicator" data-count="1"></div>
-                    </div>
-                    <div class="calendar-day">22</div>
-                    <div class="calendar-day">23</div>
-                    <div class="calendar-day">24</div>
-                    <div class="calendar-day">25</div>
-                    <div class="calendar-day has-events">
-                        26
-                        <div class="event-indicator" data-count="2"></div>
-                    </div>
-                    <div class="calendar-day">27</div>
-                    <div class="calendar-day">28</div>
-                    <div class="calendar-day">29</div>
-                    <div class="calendar-day">30</div>
-                    <div class="calendar-day inactive">1</div>
-                    <div class="calendar-day inactive">2</div>
-                    <div class="calendar-day inactive">3</div>
-                    <div class="calendar-day inactive">4</div>
-                    <div class="calendar-day inactive">5</div>
-                    <div class="calendar-day inactive">6</div>
-                    <div class="calendar-day inactive">7</div>
-                    <div class="calendar-day inactive">8</div>
+                    @foreach($calendarDays as $day)
+                        <div class="calendar-day{{ !$day['isCurrentMonth'] ? ' inactive' : '' }}{{ $day['hasEvents'] ? ' has-events' : '' }}" data-date="{{ $day['date']->format('Y-m-d') }}">
+                            {{ $day['day'] }}
+                            @if($day['hasEvents'])
+                                <div class="event-indicator" data-count="{{ $day['eventCount'] }}"></div>
+                            @endif
+                        </div>
+                    @endforeach
                 </div>
             </div>
 
             <div class="upcoming-interviews">
                 <h4>Upcoming Interviews</h4>
                 <div class="interview-list">
-                    <div class="interview-card">
-                        <div class="interview-date">
-                            <div class="date-day">16</div>
-                            <div class="date-month">Jun</div>
-                        </div>
-                        <div class="interview-details">
-                            <div class="interview-title">Mike Johnson - Medical Laboratory Technician</div>
-                            <div class="interview-meta">
-                                <span><i class="fas fa-clock" aria-hidden="true"></i> 10:00 AM - 11:00 AM</span>
-                                <span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Conference Room B</span>
-                                <span><i class="fas fa-user" aria-hidden="true"></i> Dr. Lisa Chen</span>
+                    @forelse($interviews as $interview)
+                        <div class="interview-card" data-id="{{ $interview->id }}">
+                            <div class="interview-date">
+                                <div class="date-day">{{ \Carbon\Carbon::parse($interview->interview_date)->format('d') }}</div>
+                                <div class="date-month">{{ \Carbon\Carbon::parse($interview->interview_date)->format('M') }}</div>
+                            </div>
+                            <div class="interview-details">
+                                <div class="interview-title">{{ $interview->application->applicant->first_name }} {{ $interview->application->applicant->last_name }} - {{ $interview->application->jobPosting->position->position_name }}</div>
+                                <div class="interview-meta">
+                                    <span><i class="fas fa-clock" aria-hidden="true"></i> {{ \Carbon\Carbon::parse($interview->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($interview->end_time)->format('g:i A') }}</span>
+                                    <span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> {{ $interview->location }}</span>
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> {{ $interview->interviewer ? $interview->interviewer->first_name . ' ' . $interview->interviewer->last_name : 'Not assigned' }}</span>
+                                </div>
+                            </div>
+                            <div class="interview-actions">
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
+                                </button>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-times" aria-hidden="true"></i> Cancel
+                                </button>
                             </div>
                         </div>
-                        <div class="interview-actions">
-                            <button class="btn btn-outline">
-                                <i class="fas fa-edit" aria-hidden="true"></i> Edit
-                            </button>
-                            <button class="btn btn-outline">
-                                <i class="fas fa-times" aria-hidden="true"></i> Cancel
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="interview-card">
-                        <div class="interview-date">
-                            <div class="date-day">16</div>
-                            <div class="date-month">Jun</div>
-                        </div>
-                        <div class="interview-details">
-                            <div class="interview-title">Jane Smith - Clinical Pharmacist</div>
-                            <div class="interview-meta">
-                                <span><i class="fas fa-clock" aria-hidden="true"></i> 2:00 PM - 3:00 PM</span>
-                                <span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Pharmacy Office</span>
-                                <span><i class="fas fa-user" aria-hidden="true"></i> Dr. Robert Kim</span>
-                            </div>
-                        </div>
-                        <div class="interview-actions">
-                            <button class="btn btn-outline">
-                                <i class="fas fa-edit" aria-hidden="true"></i> Edit
-                            </button>
-                            <button class="btn btn-outline">
-                                <i class="fas fa-times" aria-hidden="true"></i> Cancel
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="interview-card">
-                        <div class="interview-date">
-                            <div class="date-day">19</div>
-                            <div class="date-month">Jun</div>
-                        </div>
-                        <div class="interview-details">
-                            <div class="interview-title">John Doe - Head Nurse - Pediatrics</div>
-                            <div class="interview-meta">
-                                <span><i class="fas fa-clock" aria-hidden="true"></i> 9:00 AM - 10:30 AM</span>
-                                <span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Conference Room A</span>
-                                <span><i class="fas fa-user" aria-hidden="true"></i> Dr. Maria Garcia</span>
-                            </div>
-                        </div>
-                        <div class="interview-actions">
-                            <button class="btn btn-outline">
-                                <i class="fas fa-edit" aria-hidden="true"></i> Edit
-                            </button>
-                            <button class="btn btn-outline">
-                                <i class="fas fa-times" aria-hidden="true"></i> Cancel
-                            </button>
-                        </div>
-                    </div>
+                    @empty
+                        <p>No upcoming interviews scheduled.</p>
+                    @endforelse
                 </div>
             </div>
         </div>
@@ -627,9 +330,9 @@
                 <h3>Recruitment Reports</h3>
                 <div class="tab-actions">
                     <div class="date-range-picker">
-                        <input type="date" class="form-control" value="2023-01-01">
+                        <input type="date" class="form-control" value="{{ now()->subMonths(6)->format('Y-m-d') }}">
                         <span>to</span>
-                        <input type="date" class="form-control" value="2023-06-30">
+                        <input type="date" class="form-control" value="{{ now()->format('Y-m-d') }}">
                         <button class="btn btn-primary">Apply</button>
                     </div>
                     <button class="btn btn-outline">
@@ -685,19 +388,19 @@
                 <div class="summary-grid">
                     <div class="summary-item">
                         <div class="summary-label">Total Applications</div>
-                        <div class="summary-value">156</div>
+                        <div class="summary-value">{{ $reportData['summary']['totalApplications'] }}</div>
                     </div>
                     <div class="summary-item">
                         <div class="summary-label">Avg. Time to Hire</div>
-                        <div class="summary-value">18 days</div>
+                        <div class="summary-value">{{ round($reportData['summary']['avgTimeToHire']) }} days</div>
                     </div>
                     <div class="summary-item">
                         <div class="summary-label">Acceptance Rate</div>
-                        <div class="summary-value">85%</div>
+                        <div class="summary-value">{{ $reportData['summary']['acceptanceRate'] }}%</div>
                     </div>
                     <div class="summary-item">
                         <div class="summary-label">Cost per Hire</div>
-                        <div class="summary-value">$1,250</div>
+                        <div class="summary-value">${{ $reportData['summary']['costPerHire'] }}</div>
                     </div>
                 </div>
             </div>
@@ -716,21 +419,24 @@
         </div>
         <div class="modal-body">
             <form id="positionForm">
+                @csrf
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label" for="positionTitle">Position Title</label>
-                        <input type="text" id="positionTitle" class="form-control" placeholder="e.g. Head Nurse - Pediatrics" required>
+                        <select id="positionTitle" name="position_id" class="form-control" required>
+                            <option value="">Select Position</option>
+                            @foreach($positions as $position)
+                                <option value="{{ $position->id }}">{{ $position->position_name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="department">Department</label>
-                        <select id="department" class="form-control" required>
+                        <select id="department" name="department_id" class="form-control" required>
                             <option value="">Select Department</option>
-                            <option value="nursing">Nursing</option>
-                            <option value="admin">Administration</option>
-                            <option value="pharmacy">Pharmacy</option>
-                            <option value="laboratory">Laboratory</option>
-                            <option value="radiology">Radiology</option>
-                            <option value="emergency">Emergency</option>
+                            @foreach($departments as $department)
+                                <option value="{{ $department->id }}">{{ $department->department_name }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
@@ -738,54 +444,53 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label" for="location">Location</label>
-                        <input type="text" id="location" class="form-control" placeholder="e.g. Main Hospital, East Wing" required>
+                        <input type="text" id="location" name="location" class="form-control" placeholder="e.g. Main Hospital, East Wing" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="employmentType">Employment Type</label>
-                        <select id="employmentType" class="form-control" required>
+                        <select id="employmentType" name="employment_type" class="form-control" required>
                             <option value="">Select Type</option>
-                            <option value="full-time">Full-time</option>
-                            <option value="part-time">Part-time</option>
-                            <option value="contract">Contract</option>
-                            <option value="temporary">Temporary</option>
+                            @foreach($employmentTypes as $type)
+                                <option value="{{ $type->type_name }}">{{ $type->type_name }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label" for="description">Job Description</label>
-                    <textarea id="description" class="form-control" rows="5" placeholder="Describe the role, responsibilities, and qualifications..." required></textarea>
+                    <textarea id="description" name="description" class="form-control" rows="5" placeholder="Describe the role, responsibilities, and qualifications..." required></textarea>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label" for="requirements">Requirements</label>
-                        <textarea id="requirements" class="form-control" rows="3" placeholder="List education, experience, and skills required..." required></textarea>
+                        <textarea id="requirements" name="requirements" class="form-control" rows="3" placeholder="List education, experience, and skills required..." required></textarea>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="benefits">Benefits</label>
-                        <textarea id="benefits" class="form-control" rows="3" placeholder="List salary, healthcare, PTO, and other benefits..." required></textarea>
+                        <textarea id="benefits" name="benefits" class="form-control" rows="3" placeholder="List salary, healthcare, PTO, and other benefits..." required></textarea>
                     </div>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label" for="salary">Salary Range</label>
-                        <input type="text" id="salary" class="form-control" placeholder="e.g. $50,000 - $65,000">
+                        <input type="text" id="salary" name="salary_range" class="form-control" placeholder="e.g. $50,000 - $65,000">
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="deadline">Application Deadline</label>
-                        <input type="date" id="deadline" class="form-control" required>
+                        <input type="date" id="deadline" name="application_deadline" class="form-control" required>
                     </div>
                 </div>
+                <button type="button" class="btn btn-primary" id="savePosition">
+                    <i class="fas fa-save" aria-hidden="true"></i> Post Position
+                </button>
             </form>
         </div>
         <div class="modal-footer">
             <button class="btn btn-outline" id="cancelPosition">
                 <i class="fas fa-times" aria-hidden="true"></i> Cancel
-            </button>
-            <button class="btn btn-primary" id="savePosition">
-                <i class="fas fa-save" aria-hidden="true"></i> Post Position
             </button>
         </div>
     </div>
@@ -847,156 +552,19 @@
             </div>
             
             <div class="application-tab-content active" id="resume">
-                <div class="resume-preview">
-                    <h4>Professional Summary</h4>
-                    <p>Experienced head nurse with over 8 years of experience in pediatric care. Skilled in team leadership, patient care coordination, and implementing quality improvement initiatives.</p>
-                    
-                    <h4>Work Experience</h4>
-                    <div class="resume-item">
-                        <div class="resume-item-header">
-                            <div class="resume-item-title">Senior Nurse</div>
-                            <div class="resume-item-period">2018 - Present</div>
-                        </div>
-                        <div class="resume-item-subtitle">Memorial Children's Hospital</div>
-                        <ul class="resume-item-details">
-                            <li>Led a team of 12 nurses in the pediatric intensive care unit</li>
-                            <li>Implemented new patient care protocols that reduced readmission rates by 15%</li>
-                            <li>Mentored and trained new nursing staff</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="resume-item">
-                        <div class="resume-item-header">
-                            <div class="resume-item-title">Registered Nurse</div>
-                            <div class="resume-item-period">2015 - 2018</div>
-                        </div>
-                        <div class="resume-item-subtitle">City General Hospital</div>
-                        <ul class="resume-item-details">
-                            <li>Provided direct patient care in pediatric ward</li>
-                            <li>Assisted in developing family-centered care initiatives</li>
-                            <li>Participated in hospital quality improvement committee</li>
-                        </ul>
-                    </div>
-                    
-                    <h4>Education</h4>
-                    <div class="resume-item">
-                        <div class="resume-item-header">
-                            <div class="resume-item-title">Master of Science in Nursing</div>
-                            <div class="resume-item-period">2015</div>
-                        </div>
-                        <div class="resume-item-subtitle">State University</div>
-                    </div>
-                    
-                    <div class="resume-item">
-                        <div class="resume-item-header">
-                            <div class="resume-item-title">Bachelor of Science in Nursing</div>
-                            <div class="resume-item-period">2012</div>
-                        </div>
-                        <div class="resume-item-subtitle">City College</div>
-                    </div>
-                    
-                    <h4>Certifications</h4>
-                    <ul class="resume-certifications">
-                        <li>Pediatric Advanced Life Support (PALS)</li>
-                        <li>Certified Pediatric Nurse (CPN)</li>
-                        <li>Basic Life Support (BLS)</li>
-                    </ul>
-                </div>
+                <!-- This will be populated dynamically -->
             </div>
             
             <div class="application-tab-content" id="cover-letter">
-                <div class="cover-letter-preview">
-                    <p>Dear Hiring Manager,</p>
-                    <p>I am writing to express my interest in the Head Nurse position in the Pediatrics department at PDH Hospital. With over 8 years of experience in pediatric nursing, including 5 years in leadership roles, I am confident in my ability to lead your nursing team effectively.</p>
-                    <p>Throughout my career, I have demonstrated a commitment to excellence in patient care and team leadership. At Memorial Children's Hospital, I successfully led a team of 12 nurses, implemented quality improvement initiatives, and mentored new staff members. My experience has taught me the importance of compassionate care, effective communication, and continuous improvement in healthcare settings.</p>
-                    <p>I am particularly drawn to PDH Hospital because of your reputation for innovative pediatric care and family-centered approach. I believe my skills and experience align perfectly with your needs, and I am excited about the opportunity to contribute to your team.</p>
-                    <p>Thank you for considering my application. I look forward to discussing how my background, skills, and experiences would be an asset to PDH Hospital.</p>
-                    <p>Sincerely,<br>John Doe</p>
-                </div>
+                <!-- This will be populated dynamically -->
             </div>
             
             <div class="application-tab-content" id="documents">
-                <div class="documents-list">
-                    <div class="document-item">
-                        <i class="fas fa-file-pdf" aria-hidden="true"></i>
-                        <span class="document-name">John_Doe_Resume.pdf</span>
-                        <div class="document-actions">
-                            <button class="btn-icon" title="Download">
-                                <i class="fas fa-download" aria-hidden="true"></i>
-                            </button>
-                            <button class="btn-icon" title="View">
-                                <i class="fas fa-eye" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="document-item">
-                        <i class="fas fa-file-pdf" aria-hidden="true"></i>
-                        <span class="document-name">John_Doe_Cover_Letter.pdf</span>
-                        <div class="document-actions">
-                            <button class="btn-icon" title="Download">
-                                <i class="fas fa-download" aria-hidden="true"></i>
-                            </button>
-                            <button class="btn-icon" title="View">
-                                <i class="fas fa-eye" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="document-item">
-                        <i class="fas fa-file-image" aria-hidden="true"></i>
-                        <span class="document-name">Nursing_License.jpg</span>
-                        <div class="document-actions">
-                            <button class="btn-icon" title="Download">
-                                <i class="fas fa-download" aria-hidden="true"></i>
-                            </button>
-                            <button class="btn-icon" title="View">
-                                <i class="fas fa-eye" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="document-item">
-                        <i class="fas fa-file-pdf" aria-hidden="true"></i>
-                        <span class="document-name">CPN_Certification.pdf</span>
-                        <div class="document-actions">
-                            <button class="btn-icon" title="Download">
-                                <i class="fas fa-download" aria-hidden="true"></i>
-                            </button>
-                            <button class="btn-icon" title="View">
-                                <i class="fas fa-eye" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <!-- This will be populated dynamically -->
             </div>
             
             <div class="application-tab-content" id="notes">
-                <div class="notes-container">
-                    <div class="notes-list">
-                        <div class="note-item">
-                            <div class="note-header">
-                                <div class="note-author">Maria Garcia</div>
-                                <div class="note-date">Jun 10, 2023</div>
-                            </div>
-                            <div class="note-content">
-                                Initial review completed. Strong candidate with excellent experience in pediatric nursing. Recommend scheduling an interview.
-                            </div>
-                        </div>
-                        <div class="note-item">
-                            <div class="note-header">
-                                <div class="note-author">Robert Kim</div>
-                                <div class="note-date">Jun 12, 2023</div>
-                            </div>
-                            <div class="note-content">
-                                Checked references. Previous supervisor at Memorial Children's Hospital gave glowing recommendation. Confirmed leadership abilities and clinical skills.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="add-note">
-                        <textarea class="form-control" placeholder="Add a note about this candidate..."></textarea>
-                        <button class="btn btn-primary">
-                            <i class="fas fa-plus" aria-hidden="true"></i> Add Note
-                        </button>
-                    </div>
-                </div>
+                <!-- This will be populated dynamically -->
             </div>
         </div>
         <div class="modal-footer">
