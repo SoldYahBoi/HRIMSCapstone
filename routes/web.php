@@ -1,15 +1,29 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\RecruitmentController;
 
-// Route::get('/', function () {
-//     return view('dashboard');
-// });
-Route::get("/", [PagesController::class, 'dashboard']);
+Route::get('/', function () {
+    return view('auth.login');
+});
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__.'/auth.php';
+
+Route::get("/adminDashboard", [PagesController::class, 'dashboard'])->name('adminDashboard')->middleware(['auth', 'verified']);
 Route::get("/home", [PagesController::class, 'home'])->name('home');
 Route::patch('/employees/{id}/archive', [EmployeeController::class, 'archive'])->name('employees.archive');
 Route::patch('/employees/{id}/restore', [EmployeeController::class, 'restore'])->name('employees.restore');
@@ -20,7 +34,7 @@ Route::patch('/certificates/{id}/restoreDeath', [CertificateController::class, '
 Route::get("/archives", [PagesController::class, 'archives']);
 Route::get("/certArchives", [PagesController::class, 'certArchives']);
 
-Route::resource('/admin', EmployeeController::class);
+Route::resource('/employees', EmployeeController::class);
 Route::resource('/certificates', CertificateController::class);
 Route::resource('/recruitment', RecruitmentController::class);
 Route::post('/recruitment/positions', [RecruitmentController::class, 'createPosition']);

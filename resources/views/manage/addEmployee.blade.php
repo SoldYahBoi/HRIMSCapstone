@@ -19,7 +19,7 @@
         </div>
     @endif
     <div class="form-container">
-        <form action="/admin" method="POST">
+        <form action="/employees" method="POST">
             @csrf
             
             <!-- Personal Information Section -->
@@ -225,7 +225,7 @@
             
             <!-- Form Actions -->
             <div class="form-actions">
-                <a href="/admin" class="btn btn-outline">
+                <a href="/employees" class="btn btn-outline">
                     <i class="fas fa-times"></i> Cancel
                 </a>
                 <button type="submit" class="btn btn-primary">

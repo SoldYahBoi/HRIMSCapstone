@@ -1032,21 +1032,18 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize interview actions
     function initInterviewActions() {
-        // Calendar day click
-        const calendarDays = document.querySelectorAll('.calendar-day');
-        
-        calendarDays.forEach(day => {
-            day.addEventListener('click', function() {
-                if (this.classList.contains('inactive')) return;
-                
-                const date = this.getAttribute('data-date');
-                
-                if (this.classList.contains('has-events')) {
-                    // Fetch interviews for this date
+        // Calendar day click (event delegation, only add once)
+        const calendarGrid = document.querySelector('.calendar-grid');
+        if (calendarGrid && !calendarGrid.dataset.listenerAdded) {
+            calendarGrid.addEventListener('click', function(e) {
+                const day = e.target.closest('.calendar-day');
+                if (!day || day.classList.contains('inactive')) return;
+
+                const date = day.getAttribute('data-date');
+                if (day.classList.contains('has-events')) {
                     fetch(`/recruitment/interviews/date/${date}`)
                         .then(response => response.json())
                         .then(data => {
-                            // Update upcoming interviews list
                             updateInterviewsList(data.interviews);
                         })
                         .catch(error => {
@@ -1054,36 +1051,28 @@ document.addEventListener('DOMContentLoaded', function() {
                             showNotification('Error fetching interviews', 'error');
                         });
                 } else {
-                    // Clear interviews list
                     document.querySelector('.interview-list').innerHTML = '<p>No interviews scheduled for this date.</p>';
                 }
             });
-        });
-        
+            calendarGrid.dataset.listenerAdded = 'true';
+        }
+
         // Calendar navigation
         const calendarNavButtons = document.querySelectorAll('.calendar-nav-btn');
-        
         calendarNavButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const direction = this.querySelector('i').classList.contains('fa-chevron-left') ? 'prev' : 'next';
                 const currentMonth = document.querySelector('.calendar-header h4').textContent;
-                
-                // Parse current month
                 const [month, year] = currentMonth.split(' ');
                 const date = new Date(`${month} 1, ${year}`);
-                
-                // Update month
                 if (direction === 'prev') {
                     date.setMonth(date.getMonth() - 1);
                 } else {
                     date.setMonth(date.getMonth() + 1);
                 }
-                
-                // Fetch calendar for new month
                 fetch(`/recruitment/calendar/${date.getFullYear()}/${date.getMonth() + 1}`)
                     .then(response => response.json())
                     .then(data => {
-                        // Update calendar
                         updateCalendar(data.calendarDays, data.currentMonth);
                     })
                     .catch(error => {
@@ -1092,20 +1081,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
             });
         });
-        
+
         // Edit interview
         const editInterviewButtons = document.querySelectorAll('.interview-actions .btn:first-child');
-        
         editInterviewButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const interviewCard = this.closest('.interview-card');
                 const interviewId = interviewCard.getAttribute('data-id');
-                
-                // Fetch interview data
                 fetch(`/recruitment/interviews/${interviewId}`)
                     .then(response => response.json())
                     .then(data => {
-                        // Create and show edit interview dialog
                         createEditInterviewDialog(data.interview);
                     })
                     .catch(error => {
@@ -1114,17 +1099,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
             });
         });
-        
+
         // Cancel interview
         const cancelInterviewButtons = document.querySelectorAll('.interview-actions .btn:last-child');
-        
         cancelInterviewButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const interviewCard = this.closest('.interview-card');
                 const interviewId = interviewCard.getAttribute('data-id');
-                
                 if (confirm('Are you sure you want to cancel this interview?')) {
-                    // Cancel interview
                     fetch(`/recruitment/interviews/${interviewId}/cancel`, {
                         method: 'PUT',
                         headers: {
@@ -1134,9 +1116,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            // Remove interview card from DOM
                             interviewCard.remove();
-                            
                             showNotification('Interview cancelled successfully', 'success');
                         } else {
                             showNotification(data.message || 'Error cancelling interview', 'error');
@@ -1198,9 +1178,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         interviewList.innerHTML = html;
-        
-        // Add event listeners to new buttons
-        initInterviewActions();
     }
     
     // Update calendar
@@ -1232,9 +1209,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             calendarGrid.appendChild(dayElement);
         });
-        
-        // Add event listeners to new days
-        initInterviewActions();
     }
     
     // Create edit interview dialog

@@ -17,7 +17,7 @@
         <a href="/archives" class="btn btn-secondary">
             <i class="fas fa-archive"></i> Archives
         </a>
-        <a href="/admin/create">
+        <a href="/employees/create">
             <button class="btn btn-primary">
                 <i class="fas fa-plus"></i> Add Employee
             </button>
@@ -103,10 +103,10 @@
                         </td>
                         <td>
                             <div class="table-actions">
-                                <a href="admin/{{$e->id}}" class="btn-icon view" title="View Profile">
+                                <a href="employees/{{$e->id}}" class="btn-icon view" title="View Profile">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="admin/{{$e->id}}/edit" class="btn-icon edit" title="Edit Profile">
+                                <a href="employees/{{$e->id}}/edit" class="btn-icon edit" title="Edit Profile">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form action="employees/{{$e->id}}/archive" method="POST" class="d-inline archive-form">

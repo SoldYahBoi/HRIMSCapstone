@@ -29,7 +29,7 @@
                 <h3>Total Employees</h3>
                 <p class="stats-number">{{$totalEmployee}}</p>
                 <span class="stats-change positive">
-                    <i class="fas fa-arrow-up"></i> 4.5%
+                    <i class="fas fa-arrow-up"></i> Active
                 </span>
             </div>
             <div class="stats-card-icon">
@@ -40,9 +40,9 @@
         <div class="stats-card">
             <div class="stats-card-content">
                 <h3>Present Today</h3>
-                <p class="stats-number">412</p>
+                <p class="stats-number">{{$presentToday}}</p>
                 <span class="stats-change">
-                    <i class="fas fa-circle"></i> 84.6%
+                    <i class="fas fa-circle"></i> Active
                 </span>
             </div>
             <div class="stats-card-icon">
@@ -53,9 +53,9 @@
         <div class="stats-card">
             <div class="stats-card-content">
                 <h3>On Leave</h3>
-                <p class="stats-number">32</p>
+                <p class="stats-number">{{$onLeave}}</p>
                 <span class="stats-change">
-                    <i class="fas fa-circle"></i> 6.6%
+                    <i class="fas fa-circle"></i> On Leave
                 </span>
             </div>
             <div class="stats-card-icon">
@@ -66,9 +66,9 @@
         <div class="stats-card">
             <div class="stats-card-content">
                 <h3>Open Positions</h3>
-                <p class="stats-number">14</p>
+                <p class="stats-number">{{$openPositions}}</p>
                 <span class="stats-change negative">
-                    <i class="fas fa-arrow-down"></i> 2.1%
+                    <i class="fas fa-arrow-down"></i> Available
                 </span>
             </div>
             <div class="stats-card-icon">
@@ -93,54 +93,16 @@
                 </div>
             </div>
             <div class="department-chart">
+                @foreach($departments as $department)
                 <div class="department-bar">
-                    <div class="dept-label">Nursing</div>
+                    <div class="dept-label">{{ $department->name ?? $department->department_name ?? 'N/A' }}</div>
                     <div class="dept-bar-wrapper">
-                        <div class="dept-bar-fill" style="width: 65%;">
-                            <span>156</span>
+                        <div class="dept-bar-fill" style="width: {{($department->employees_count / $totalEmployee) * 100}}%;">
+                            <span>{{$department->employees_count}}</span>
                         </div>
                     </div>
                 </div>
-                <div class="department-bar">
-                    <div class="dept-label">Physicians</div>
-                    <div class="dept-bar-wrapper">
-                        <div class="dept-bar-fill" style="width: 42%;">
-                            <span>98</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="department-bar">
-                    <div class="dept-label">Admin</div>
-                    <div class="dept-bar-wrapper">
-                        <div class="dept-bar-fill" style="width: 35%;">
-                            <span>84</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="department-bar">
-                    <div class="dept-label">Laboratory</div>
-                    <div class="dept-bar-wrapper">
-                        <div class="dept-bar-fill" style="width: 28%;">
-                            <span>67</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="department-bar">
-                    <div class="dept-label">Pharmacy</div>
-                    <div class="dept-bar-wrapper">
-                        <div class="dept-bar-fill" style="width: 22%;">
-                            <span>52</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="department-bar">
-                    <div class="dept-label">Radiology</div>
-                    <div class="dept-bar-wrapper">
-                        <div class="dept-bar-fill" style="width: 12%;">
-                            <span>30</span>
-                        </div>
-                    </div>
-                </div>
+                @endforeach
             </div>
         </section>
 
@@ -151,51 +113,20 @@
                 <a href="#" class="view-all">View All</a>
             </div>
             <ul class="activity-list">
+                @foreach($recentActivities as $activity)
                 <li class="activity-item">
                     <div class="activity-icon bg-primary">
-                        <i class="fas fa-user-plus"></i>
+                        <i class="fas fa-user-edit"></i>
                     </div>
                     <div class="activity-content">
-                        <p class="activity-text"><strong>Dr. Sarah Johnson</strong> was added to Cardiology</p>
-                        <span class="activity-time">2 hours ago</span>
+                        <p class="activity-text">
+                            <strong>{{ $activity->first_name }} {{ $activity->last_name }}</strong> 
+                            was updated in {{ $activity->department->name ?? $activity->department->department_name ?? 'N/A' }}
+                        </p>
+                        <span class="activity-time">{{$activity->updated_at->diffForHumans()}}</span>
                     </div>
                 </li>
-                <li class="activity-item">
-                    <div class="activity-icon bg-success">
-                        <i class="fas fa-file-medical"></i>
-                    </div>
-                    <div class="activity-content">
-                        <p class="activity-text"><strong>Nurse Training Program</strong> completed by 12 staff members</p>
-                        <span class="activity-time">Yesterday</span>
-                    </div>
-                </li>
-                <li class="activity-item">
-                    <div class="activity-icon bg-warning">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="activity-content">
-                        <p class="activity-text"><strong>May Shift Schedule</strong> has been published</p>
-                        <span class="activity-time">Yesterday</span>
-                    </div>
-                </li>
-                <li class="activity-item">
-                    <div class="activity-icon bg-danger">
-                        <i class="fas fa-exclamation-circle"></i>
-                    </div>
-                    <div class="activity-content">
-                        <p class="activity-text"><strong>Compliance Training</strong> deadline approaching for 24 employees</p>
-                        <span class="activity-time">2 days ago</span>
-                    </div>
-                </li>
-                <li class="activity-item">
-                    <div class="activity-icon bg-secondary">
-                        <i class="fas fa-graduation-cap"></i>
-                    </div>
-                    <div class="activity-content">
-                        <p class="activity-text"><strong>Professional Development</strong> budget approved for Q2</p>
-                        <span class="activity-time">3 days ago</span>
-                    </div>
-                </li>
+                @endforeach
             </ul>
         </section>
 
@@ -304,7 +235,7 @@
         <section class="dashboard-card recent-employees">
             <div class="card-header">
                 <h2>Recent Employees</h2>
-                <a href="#" class="view-all">View All</a>
+                <a href="/employees" class="view-all">View All</a>
             </div>
             <div class="table-container">
                 <table class="employees-table">
@@ -318,19 +249,20 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @foreach($recentEmployees as $employee)
                         <tr>
                             <td>
                                 <div class="employee-info">
-                                    <div class="employee-avatar">JD</div>
+                                    <div class="employee-avatar">{{substr($employee->first_name, 0, 1)}}{{substr($employee->last_name, 0, 1)}}</div>
                                     <div>
-                                        <div class="employee-name">John Doe</div>
-                                        <div class="employee-email">john.doe@hospital.com</div>
+                                        <div class="employee-name">{{$employee->first_name}} {{$employee->last_name}}</div>
+                                        <div class="employee-email">{{$employee->email}}</div>
                                     </div>
                                 </div>
                             </td>
-                            <td>Registered Nurse</td>
-                            <td><span class="department-badge dept-nursing">Nursing</span></td>
-                            <td><span class="status-badge active">Active</span></td>
+                            <td>{{ $employee->position->name ?? $employee->position->position_name ?? 'N/A' }}</td>
+                            <td><span class="department-badge dept-{{ strtolower($employee->department->name ?? $employee->department->department_name ?? 'none') }}">{{ $employee->department->name ?? $employee->department->department_name ?? 'N/A' }}</span></td>
+                            <td><span class="status-badge {{strtolower($employee->status)}}">{{$employee->status}}</span></td>
                             <td>
                                 <div class="table-actions">
                                     <button class="btn-icon" title="View Profile">
@@ -342,102 +274,7 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr>
-                            <td>
-                                <div class="employee-info">
-                                    <div class="employee-avatar">JS</div>
-                                    <div>
-                                        <div class="employee-name">Jane Smith</div>
-                                        <div class="employee-email">jane.smith@hospital.com</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>Lab Technician</td>
-                            <td><span class="department-badge dept-laboratory">Laboratory</span></td>
-                            <td><span class="status-badge active">Active</span></td>
-                            <td>
-                                <div class="table-actions">
-                                    <button class="btn-icon" title="View Profile">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn-icon" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="employee-info">
-                                    <div class="employee-avatar">RM</div>
-                                    <div>
-                                        <div class="employee-name">Robert Miller</div>
-                                        <div class="employee-email">robert.miller@hospital.com</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>Pharmacist</td>
-                            <td><span class="department-badge dept-pharmacy">Pharmacy</span></td>
-                            <td><span class="status-badge training">Training</span></td>
-                            <td>
-                                <div class="table-actions">
-                                    <button class="btn-icon" title="View Profile">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn-icon" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="employee-info">
-                                    <div class="employee-avatar">SJ</div>
-                                    <div>
-                                        <div class="employee-name">Sarah Johnson</div>
-                                        <div class="employee-email">sarah.johnson@hospital.com</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>Radiologist</td>
-                            <td><span class="department-badge dept-radiology">Radiology</span></td>
-                            <td><span class="status-badge active">Active</span></td>
-                            <td>
-                                <div class="table-actions">
-                                    <button class="btn-icon" title="View Profile">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn-icon" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="employee-info">
-                                    <div class="employee-avatar">MP</div>
-                                    <div>
-                                        <div class="employee-name">Michael Patel</div>
-                                        <div class="employee-email">michael.patel@hospital.com</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>HR Specialist</td>
-                            <td><span class="department-badge dept-admin">Admin</span></td>
-                            <td><span class="status-badge active">Active</span></td>
-                            <td>
-                                <div class="table-actions">
-                                    <button class="btn-icon" title="View Profile">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn-icon" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -457,8 +294,11 @@
                 <div class="compliance-donut">
                     <svg width="150" height="150" viewBox="0 0 150 150">
                         <circle cx="75" cy="75" r="60" fill="none" stroke="#e2e8f0" stroke-width="15" />
-                        <circle cx="75" cy="75" r="60" fill="none" stroke="#2563eb" stroke-width="15" stroke-dasharray="377" stroke-dashoffset="94.25" transform="rotate(-90 75 75)" />
-                        <text x="75" y="75" text-anchor="middle" dominant-baseline="middle" font-size="24" font-weight="bold">75%</text>
+                        <circle cx="75" cy="75" r="60" fill="none" stroke="#2563eb" stroke-width="15" 
+                            stroke-dasharray="377" 
+                            stroke-dashoffset="{{377 - (377 * $compliancePercentage / 100)}}" 
+                            transform="rotate(-90 75 75)" />
+                        <text x="75" y="75" text-anchor="middle" dominant-baseline="middle" font-size="24" font-weight="bold">{{$compliancePercentage}}%</text>
                         <text x="75" y="95" text-anchor="middle" dominant-baseline="middle" font-size="12">Compliant</text>
                     </svg>
                 </div>
@@ -468,24 +308,28 @@
                             <span class="status-dot complete"></span>
                             <span>Complete</span>
                         </div>
-                        <div class="compliance-count">365</div>
+                        <div class="compliance-count">{{$completeDocuments}}</div>
                     </div>
                     <div class="compliance-item">
                         <div class="compliance-status">
                             <span class="status-dot pending"></span>
                             <span>Pending</span>
                         </div>
-                        <div class="compliance-count">98</div>
+                        <div class="compliance-count">{{$pendingDocuments}}</div>
                     </div>
                     <div class="compliance-item">
                         <div class="compliance-status">
                             <span class="status-dot overdue"></span>
                             <span>Overdue</span>
                         </div>
-                        <div class="compliance-count">24</div>
+                        <div class="compliance-count">{{$overdueDocuments}}</div>
                     </div>
                 </div>
             </div>
         </section>
     </div>
+@endsection
+
+@section('scripts')
+    <script src="{{ asset('js/dashboard.js') }}"></script>
 @endsection

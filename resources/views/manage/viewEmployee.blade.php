@@ -19,7 +19,7 @@
         </div>
     @endif
     <div class="view-header">
-        <a href="/admin" class="btn btn-outline btn-back">
+        <a href="/employees" class="btn btn-outline btn-back">
             <i class="fas fa-arrow-left"></i> Back to List
         </a>
     </div>

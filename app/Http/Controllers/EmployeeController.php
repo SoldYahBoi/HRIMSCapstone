@@ -60,7 +60,7 @@ class EmployeeController extends Controller
             "employment_type_id" => "required"
         ]);
         if ($validator->fails()) {
-            return redirect('/admin/create')->withErrors($validator)->withInput();
+            return redirect('/employees/create')->withErrors($validator)->withInput();
         }
         else{
             // return $request->all();
@@ -83,7 +83,7 @@ class EmployeeController extends Controller
             $latest = $request->first_name . " " . $request->last_name;
             // $msg = "Client ".$latest." Added Successfully!";
             // Log::info($msg);
-            return redirect('/admin/create')->with('success', 'Employee '.$latest. ' Added Successfully!');
+            return redirect('/employees/create')->with('success', 'Employee '.$latest. ' Added Successfully!');
         }
     }
 
@@ -140,7 +140,7 @@ class EmployeeController extends Controller
             "employment_type_id" => "required"
         ]);
         if ($validator->fails()) {
-            return redirect('/admin/'.$employee->id.'/edit')->withErrors($validator)->withInput()->with('employee', $employee)->with('department', $department)->with('position', $position)->with('employment', $employment);
+            return redirect('/employees/'.$employee->id.'/edit')->withErrors($validator)->withInput()->with('employee', $employee)->with('department', $department)->with('position', $position)->with('employment', $employment);
         }
         else{
             // return $request->all();
@@ -162,7 +162,7 @@ class EmployeeController extends Controller
             $latest = $request->first_name . " " . $request->last_name;
             // $msg = "Client ".$latest." Added Successfully!";
             // Log::info($msg);
-            return redirect('/admin/'.$employee->id)->with('success', 'Employee '.$latest. ' Updated Successfully!')->with('employee', $employee)->with('department', $department)->with('position', $position)->with('employment', $employment);
+            return redirect('/employees/'.$employee->id)->with('success', 'Employee '.$latest. ' Updated Successfully!')->with('employee', $employee)->with('department', $department)->with('position', $position)->with('employment', $employment);
         }
     }
 
@@ -177,7 +177,7 @@ class EmployeeController extends Controller
         $employee->status = $status;
         $employee->save();
         $latest = $employee->first_name . " " . $employee->last_name;
-        return redirect('/admin')->with('success', 'Employee '.$latest. ' Archived Successfully!');
+        return redirect('/employees')->with('success', 'Employee '.$latest. ' Archived Successfully!');
     }
 
     public function restore($id)

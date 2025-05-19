@@ -238,13 +238,7 @@
             </div>
 
             <div class="pagination">
-                <button class="btn btn-outline pagination-btn" {{ $applications->onFirstPage() ? 'disabled' : '' }}>
-                    <i class="fas fa-chevron-left" aria-hidden="true"></i> Previous
-                </button>
-                <span class="pagination-info">Page {{ $applications->currentPage() }} of {{ $applications->lastPage() }}</span>
-                <button class="btn btn-outline pagination-btn" {{ $applications->hasMorePages() ? '' : 'disabled' }}>
-                    Next <i class="fas fa-chevron-right" aria-hidden="true"></i>
-                </button>
+                {{ $applications->links() }}
             </div>
         </div>
 

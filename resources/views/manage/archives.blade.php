@@ -14,7 +14,7 @@
 
 @section('page-actions')
     <div class="action-buttons">
-        <a href="/admin" class="btn btn-outline">
+        <a href="/employees" class="btn btn-outline">
             <i class="fas fa-arrow-left"></i> Return to List
         </a>
     </div>

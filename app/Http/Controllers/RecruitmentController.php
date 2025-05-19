@@ -52,7 +52,7 @@ class RecruitmentController extends Controller
         // Get applications with pagination
         $applications = Application::with(['applicant', 'jobPosting.department'])
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(5);
 
         // Get departments for filters
         $departments = Department::all();
@@ -320,12 +320,19 @@ class RecruitmentController extends Controller
      */
     public function applicationSubmitted($trackingCode)
     {
-        // Parse tracking code to get application ID
-        $applicationId = substr($trackingCode, 3, strpos($trackingCode, substr(md5(''), 0, 5)) - 3);
+        // Extract application ID from tracking code
+        $applicationId = (int)substr($trackingCode, 3, -5);
 
-        // Find application
-        $application = Application::with(['applicant', 'jobPosting'])
-            ->find($applicationId);
+        // Find application with all needed relationships
+        $application = Application::with([
+            'applicant',
+            'jobPosting.position',
+            'jobPosting.department'
+        ])->find($applicationId);
+
+        if (!$application) {
+            return redirect()->route('recruitment.job.listings')->with('error', 'Application not found.');
+        }
 
         return view('recruitment.applicationSuccess', compact('trackingCode', 'application'));
     }

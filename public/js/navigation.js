@@ -52,3 +52,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+window.toggleProfileDropdown = function(event) {
+    event.stopPropagation();
+    const menu = document.getElementById('profileDropdownMenu');
+    if (!menu) return;
+    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function handler(e) {
+        if (!menu.contains(e.target)) {
+            menu.style.display = 'none';
+            document.removeEventListener('click', handler);
+        }
+    });
+}

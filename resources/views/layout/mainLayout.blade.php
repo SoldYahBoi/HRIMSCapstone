@@ -36,13 +36,13 @@
                 </button>
                 <ul id="main-menu">
                     <li>
-                        <a href="/" class="{{ Request::is('/') ? 'active' : '' }}" aria-current="{{ Request::is('/') ? 'page' : 'false' }}">
+                        <a href="/adminDashboard" class="{{ Request::is('adminDashboard*') ? 'active' : '' }}" aria-current="{{ Request::is('adminDashboard*') ? 'page' : 'false' }}">
                             <i class="fas fa-home" aria-hidden="true"></i> 
                             <span>Dashboard</span>
                         </a>
                     </li>
                     <li>
-                        <a href="/admin" class="{{ Request::is('admin*') ? 'active' : '' }}" aria-current="{{ Request::is('admin*') ? 'page' : 'false' }}">
+                        <a href="/employees" class="{{ Request::is('employees*') ? 'active' : '' }}" aria-current="{{ Request::is('employees*') ? 'page' : 'false' }}">
                             <i class="fas fa-users-cog" aria-hidden="true"></i> 
                             <span>Employee Management</span>
                         </a>
@@ -65,12 +65,30 @@
                             <span>About Us</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="/pages/contactus" class="{{ Request::is('pages/contactus') ? 'active' : '' }}" aria-current="{{ Request::is('pages/contactus') ? 'page' : 'false' }}">
-                            <i class="fas fa-envelope" aria-hidden="true"></i> 
-                            <span>Contact Us</span>
-                        </a>
+                    @auth
+                    <li class="profile-dropdown">
+                        <button class="nav-profile-btn" onclick="toggleProfileDropdown(event)">
+                            <i class="fas fa-user-circle"></i>
+                            <span>{{ Auth::user()->name }}</span>
+                            <svg class="dropdown-caret" width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                        <ul class="dropdown-menu" id="profileDropdownMenu" style="display: none;">
+                            <li>
+                                <a href="{{ route('profile.edit') }}"><i class="fas fa-user-edit"></i> Profile</a>
+                            </li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+                                    @csrf
+                                    <button type="submit" style="background: none; border: none; width: 100%; text-align: left; padding: 0.75em 1em; color: #333; display: flex; align-items: center; cursor: pointer;">
+                                        <i class="fas fa-sign-out-alt"></i> Log Out
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
                     </li>
+                    @endauth
                 </ul>
             </nav>
         </header>
@@ -102,6 +120,7 @@
     <!-- Custom Javascript - Placed at the end for better performance -->
     <script src="{{ asset('js/navigation.js') }}"></script>
     <script src="{{ asset('js/notif.js') }}"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
     @yield('scripts')
 </body>
 </html>

@@ -725,3 +725,78 @@ footer {
 .dept-laboratory { background-color: #fce7f3; color: #9d174d; }
 .dept-radiology { background-color: #e0e7ff; color: #3730a3; }
 .dept-emergency { background-color: #fee2e2; color: #b91c1c; }
+
+.profile-dropdown {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.nav-profile-btn {
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: #333;
+    font-size: 1em;
+    padding: 0.75em 1em;
+    border-radius: 0.5rem;
+    transition: background 0.2s;
+}
+
+.nav-profile-btn:hover, .nav-profile-btn:focus {
+    background: #f3f4f6;
+    color: #111827;
+    outline: none;
+}
+
+.profile-dropdown .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 180px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-top: 0.5em;
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    padding: 0;
+    list-style: none;
+}
+
+.profile-dropdown .dropdown-menu li {
+    width: 100%;
+}
+
+.profile-dropdown .dropdown-menu a,
+.profile-dropdown .dropdown-menu button {
+    color: #333;
+    padding: 0.75em 1em;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    background: none;
+    border: none;
+    width: 100%;
+    font: inherit;
+    transition: background 0.2s;
+}
+
+.profile-dropdown .dropdown-menu a:hover,
+.profile-dropdown .dropdown-menu button:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.profile-dropdown .dropdown-menu i {
+    margin-right: 0.5em;
+    font-size: 1.1em;
+}
+
+.dropdown-caret {
+    margin-left: 0.5em;
+}

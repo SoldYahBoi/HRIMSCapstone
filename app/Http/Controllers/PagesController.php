@@ -25,14 +25,60 @@ use App\Models\DeathAttendant;
 use App\Models\DeathInformant;
 use App\Models\CorpseDisposal;
 use App\Models\DeathCertificate;
+use App\Models\JobPosting;
 
 class PagesController extends Controller
 {
     //
     public function dashboard()
     {
+        // Employee Statistics
         $totalEmployee = Employee::where('status', 'Active')->count();
-        return view('manage.dashboard')->with('totalEmployee', $totalEmployee);
+        $presentToday = Employee::where('status', 'Active')->count(); // You might want to implement actual attendance tracking
+        $onLeave = Employee::where('status', 'On Leave')->count();
+        $openPositions = JobPosting::where('status', 'Open')->count();
+
+        // Department Overview
+        $departments = Department::withCount(['employees' => function($query) {
+            $query->where('status', 'Active');
+        }])->get();
+
+        // Recent Activities (Last 5 employee changes)
+        $recentActivities = Employee::with(['department', 'position'])
+            ->orderBy('updated_at', 'desc')
+            ->take(5)
+            ->get();
+
+        // Recent Employees
+        $recentEmployees = Employee::with(['department', 'position'])
+            ->where('status', 'Active')
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        // Compliance Status (Example: Employees with complete documents)
+        $totalEmployees = Employee::count();
+        $completeDocuments = Employee::where('status', 'Active')->count(); // You might want to implement actual document tracking
+        $pendingDocuments = Employee::where('status', 'Pending')->count();
+        $overdueDocuments = Employee::where('status', 'Overdue')->count();
+
+        // Calculate compliance percentage
+        $compliancePercentage = $totalEmployees > 0 ? 
+            round(($completeDocuments / $totalEmployees) * 100) : 0;
+
+        return view('manage.dashboard', compact(
+            'totalEmployee',
+            'presentToday',
+            'onLeave',
+            'openPositions',
+            'departments',
+            'recentActivities',
+            'recentEmployees',
+            'completeDocuments',
+            'pendingDocuments',
+            'overdueDocuments',
+            'compliancePercentage'
+        ));
     }
     public function archives()
     {
